@@ -184,14 +184,23 @@
 	<!-- Footer -->
 	<footer class="app-footer">
 		<div class="footer-content">
-			<a
-				href="https://buymeacoffee.com"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="btn btn-secondary"
-			>
-				☕ Buy me a coffee
-			</a>
+			<span>Made with ❤️ by Diogo Ruivo</span>
+			<span>Any feedback or suggestions? Feel free to reach out!</span>
+			<span>
+				<script
+					type="text/javascript"
+					src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+					data-name="bmc-button"
+					data-slug="wayfindingdiogo"
+					data-color="#FFDD00"
+					data-emoji="☕"
+					data-font="Poppins"
+					data-text="Buy me a coffee"
+					data-outline-color="#000000"
+					data-font-color="#000000"
+					data-coffee-color="#ffffff"
+				></script>
+			</span>
 		</div>
 	</footer>
 </div>
@@ -234,11 +243,18 @@
 	.app-main {
 		flex: 1;
 		display: flex;
+		flex-direction: row;
 		gap: 0;
 		overflow: hidden;
 		max-width: 1400px;
 		width: 100%;
 		margin: 0 auto;
+	}
+
+	@media (max-width: 1024px) {
+		.app-main {
+			flex-direction: column;
+		}
 	}
 
 	.canvas-container {
@@ -266,6 +282,15 @@
 		background-color: var(--app-panel-bg);
 		border-left: 1px solid var(--app-border);
 		overflow: hidden;
+	}
+
+	@media (max-width: 1024px) {
+		.editor-panel {
+			width: 100%;
+			border-left: none;
+			border-top: 1px solid var(--app-border);
+			max-height: 40%;
+		}
 	}
 
 	.panel-header {
@@ -366,12 +391,8 @@
 		margin: 0 auto;
 		width: 100%;
 		display: flex;
-		justify-content: flex-start;
+		justify-content: space-around;
 		align-items: center;
-	}
-
-	.footer-content .btn {
-		display: inline-flex;
 	}
 
 	.accordion {
