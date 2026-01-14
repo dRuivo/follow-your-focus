@@ -34,19 +34,19 @@
 	$: params = get(focusRingParams);
 </script>
 
-<div class="app-container">
+<div class="page-container">
 	<!-- Header -->
-	<header class="app-header">
+	<div class="page-header">
 		<div class="header-content">
 			<div class="header-title-section">
 				<h1>Follow Your Focus</h1>
 				<p class="header-description">Design custom focus rings for your lense</p>
 			</div>
 		</div>
-	</header>
+	</div>
 
 	<!-- Main Content Area -->
-	<main class="app-main">
+	<main class="page-main">
 		<div class="canvas-container">
 			<canvas id="c" class="canvas"></canvas>
 		</div>
@@ -180,41 +180,18 @@
 			</div>
 		</aside>
 	</main>
-
-	<!-- Footer -->
-	<footer class="app-footer">
-		<div class="footer-content">
-			<span>Made with ❤️ by Diogo Ruivo</span>
-			<span>Any feedback or suggestions? Feel free to reach out!</span>
-			<span>
-				<script
-					type="text/javascript"
-					src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
-					data-name="bmc-button"
-					data-slug="wayfindingdiogo"
-					data-color="#FFDD00"
-					data-emoji="☕"
-					data-font="Poppins"
-					data-text="Buy me a coffee"
-					data-outline-color="#000000"
-					data-font-color="#000000"
-					data-coffee-color="#ffffff"
-				></script>
-			</span>
-		</div>
-	</footer>
 </div>
 
 <style>
-	.app-container {
+	.page-container {
 		display: flex;
 		flex-direction: column;
-		height: 100vh;
+		height: 100%;
 		background-color: var(--app-bg);
 		color: var(--app-text);
 	}
 
-	.app-header {
+	.page-header {
 		background-color: var(--app-header-bg);
 		border-bottom: 1px solid var(--app-border);
 		padding: var(--space-6);
@@ -225,6 +202,9 @@
 		max-width: 1400px;
 		margin: 0 auto;
 		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
 	}
 
 	.header-title-section h1 {
@@ -240,7 +220,7 @@
 		color: var(--app-text-muted);
 	}
 
-	.app-main {
+	.page-main {
 		flex: 1;
 		display: flex;
 		flex-direction: row;
@@ -252,7 +232,7 @@
 	}
 
 	@media (max-width: 1024px) {
-		.app-main {
+		.page-main {
 			flex-direction: column;
 		}
 	}
@@ -269,10 +249,15 @@
 
 	.canvas {
 		width: 100%;
-		height: 100%;
+		max-height: 70vh;
 		border-radius: var(--radius-lg);
 		background-color: var(--color-neutral-100);
 		box-shadow: var(--shadow-md);
+	}
+	@media (max-width: 1024px) {
+		.canvas-container {
+			max-height: 50vh; /* Shorter on mobile to show params */
+		}
 	}
 
 	.editor-panel {
@@ -377,22 +362,6 @@
 
 	.panel-footer .btn {
 		width: 100%;
-	}
-
-	.app-footer {
-		background-color: var(--app-header-bg);
-		border-top: 1px solid var(--app-border);
-		padding: var(--space-4) var(--space-6);
-		box-shadow: var(--shadow-sm);
-	}
-
-	.footer-content {
-		max-width: 1400px;
-		margin: 0 auto;
-		width: 100%;
-		display: flex;
-		justify-content: space-around;
-		align-items: center;
 	}
 
 	.accordion {
