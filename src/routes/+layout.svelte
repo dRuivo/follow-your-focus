@@ -4,6 +4,7 @@
 
 	import favicon from '$lib/assets/favicon.svg';
 	import IntroModal from '$lib/components/IntroModal.svelte';
+	import FeedbackModal from '$lib/components/FeedbackModal.svelte';
 
 	let feedbackOpen = $state(false);
 	let introModalOpen = $state(true);
@@ -16,12 +17,13 @@
 </svelte:head>
 
 <IntroModal bind:isOpen={introModalOpen} />
+<FeedbackModal bind:isOpen={feedbackOpen} />
 
 <div class="app-wrapper">
 	<header class="app-header">
 		<div class="brand">
 			<div class="brand__name">Follow Your Focus</div>
-			<div class="brand__tag">Community fabrication tool</div>
+			<div class="brand__tag">Community tools</div>
 		</div>
 
 		<nav class="nav">
@@ -38,7 +40,7 @@
 	<main class="app-content">
 		{@render children()}
 	</main>
-	<footer class="app-footer mt-auto">
+	<footer class="app-footer">
 		<div class="footer__row">
 			<div class="footer__left">Built for the commons.</div>
 			<div class="footer__right">

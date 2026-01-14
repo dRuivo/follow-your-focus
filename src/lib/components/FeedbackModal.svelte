@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { EXTERNAL_URLS } from '$lib/config';
 
 	export let isOpen = false;
@@ -7,17 +6,16 @@
 
 	let dialogElement: HTMLDialogElement;
 
-	onMount(() => {
-		// Handle Escape key
-		const handleKeydown = (e: KeyboardEvent) => {
-			if (e.key === 'Escape' && isOpen) {
-				closeModal();
-			}
-		};
+	function closeModal() {
+		isOpen = false;
+		onClose();
+	}
 
-		window.addEventListener('keydown', handleKeydown);
-		return () => window.removeEventListener('keydown', handleKeydown);
-	});
+	function handleBackdropClick(e: MouseEvent) {
+		if (e.target === dialogElement) {
+			closeModal();
+		}
+	}
 
 	$: if (dialogElement && isOpen) {
 		if (typeof dialogElement.showModal === 'function') {
@@ -42,17 +40,6 @@
 		}
 	}
 
-	function closeModal() {
-		isOpen = false;
-		onClose();
-	}
-
-	function handleBackdropClick(e: MouseEvent) {
-		if (e.target === dialogElement) {
-			closeModal();
-		}
-	}
-
 	function openGitHub() {
 		window.open(EXTERNAL_URLS.GITHUB_REPO, '_blank');
 	}
@@ -62,81 +49,56 @@
 	bind:this={dialogElement}
 	onclick={handleBackdropClick}
 	oncancel={() => closeModal()}
-	class="intro-modal"
-	aria-labelledby="intro-modal-title"
-	aria-describedby="intro-modal-content"
+	class="feedback-modal"
+	aria-labelledby="feedback-modal-title"
+	aria-describedby="feedback-modal-content"
 >
 	<div class="modal-overlay">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h1 id="intro-modal-title">Follow Your Focus</h1>
-				<h2>Community tools</h2>
+				<h1 id="feedback-modal-title">Feedback</h1>
 			</div>
 
-			<div id="intro-modal-content" class="modal-body">
+			<div id="feedback-modal-content" class="modal-body">
 				<section class="modal-section">
-					<h2>Welcome to the Commons</h2>
+					<h2>Work in Progress</h2>
 					<p>
-						This tool exists to make filmmaking equipment more accessible, repairable, and
-						shareable.
-					</p>
-					<p>
-						Generate custom follow focus rings locally—adapted to your lenses—without subscriptions,
-						accounts, or lock-in.
+						A dedicated feedback form is coming soon. For now, we'd appreciate your input through
+						GitHub issues.
 					</p>
 				</section>
 
 				<section class="modal-section">
-					<h2>Why this exists</h2>
+					<h2>How to Share Feedback</h2>
 					<p>
-						Professional gear is often overpriced, proprietary, or designed to be replaced rather
-						than repaired.
+						Head over to the <a href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
+							>GitHub repository</a
+						> and open an issue with your feedback, bug reports, or feature requests.
 					</p>
-					<p>This tool is an alternative:</p>
+				</section>
+
+				<section class="modal-section">
+					<h2>What We're Looking For</h2>
 					<ul class="modal-list">
-						<li>fabricate locally</li>
-						<li>adapt instead of discard</li>
-						<li>share knowledge instead of extracting value</li>
+						<li>Bug reports and issues</li>
+						<li>Feature suggestions</li>
+						<li>Design improvements</li>
+						<li>Documentation improvements</li>
+						<li>General feedback</li>
 					</ul>
-				</section>
-
-				<section class="modal-section">
-					<h2>Values note</h2>
-					<p>
-						We ask that this tool be used in ways that support learning, creativity, and community.
-						It is not intended for surveillance, coercion, or extractive practices.
-					</p>
-				</section>
-
-				<section class="modal-section">
-					<h2>Sharing & attribution</h2>
-					<p>You're free to use the generated STL files commercially.</p>
-					<p>
-						If you share or sell prints, please credit where the tool came from (a link is enough).
-					</p>
-				</section>
-
-				<section class="modal-section">
-					<h2>Support</h2>
-					<p>
-						This project is free forever. If it helps you, consider sharing it or leaving a tip:
-					</p>
-					<a href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
-						>☕ Buy Me a Coffee</a
-					>
 				</section>
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-secondary" onclick={openGitHub}>View on GitHub</button>
-				<button class="btn btn-primary" onclick={() => closeModal()}>Enter the tool</button>
+				<button class="btn btn-secondary" onclick={() => closeModal()}>Close</button>
+				<button class="btn btn-primary" onclick={openGitHub}>Open GitHub Issues</button>
 			</div>
 		</div>
 	</div>
 </dialog>
 
 <style>
-	.intro-modal {
+	.feedback-modal {
 		border: none;
 		border-radius: var(--radius-xl);
 		padding: 0;
@@ -154,12 +116,12 @@
 		z-index: 1000;
 	}
 
-	.intro-modal[open],
-	.intro-modal:modal {
+	.feedback-modal[open],
+	.feedback-modal:modal {
 		display: flex;
 	}
 
-	.intro-modal::backdrop {
+	.feedback-modal::backdrop {
 		background-color: rgb(0 0 0 / 0.5);
 		backdrop-filter: blur(4px);
 	}
@@ -184,19 +146,10 @@
 	}
 
 	.modal-header h1 {
-		margin: 0 0 var(--space-1) 0;
+		margin: 0;
 		font-size: var(--text-2xl);
 		font-weight: 700;
 		color: var(--color-primary-600);
-	}
-
-	.modal-header h2 {
-		margin: 0;
-		font-size: var(--text-sm);
-		font-weight: 500;
-		color: var(--app-text-muted);
-		font-family: var(--font-body);
-		letter-spacing: 0;
 	}
 
 	.modal-body {
@@ -230,8 +183,23 @@
 		color: var(--app-text);
 	}
 
-	.modal-section p + p {
-		margin-top: var(--space-3);
+	.modal-section a {
+		color: var(--color-primary-600);
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.2s ease;
+		border-bottom: 2px solid transparent;
+		padding-bottom: 2px;
+	}
+
+	.modal-section a:hover {
+		color: var(--color-primary-700);
+		border-bottom-color: var(--color-primary-600);
+	}
+
+	.modal-section a:focus-visible {
+		outline: 2px solid var(--color-primary-600);
+		outline-offset: 2px;
 	}
 
 	.modal-list {
@@ -263,27 +231,8 @@
 		justify-content: center;
 	}
 
-	.modal-section a {
-		color: var(--color-warning-600);
-		text-decoration: none;
-		font-weight: 600;
-		transition: all 0.2s ease;
-		border-bottom: 2px solid transparent;
-		padding-bottom: 2px;
-	}
-
-	.modal-section a:hover {
-		color: var(--color-warning-700);
-		border-bottom-color: var(--color-warning-600);
-	}
-
-	.modal-section a:focus-visible {
-		outline: 2px solid var(--color-warning-600);
-		outline-offset: 2px;
-	}
-
 	@media (max-width: 640px) {
-		.intro-modal {
+		.feedback-modal {
 			width: 95vw;
 			max-height: 85vh;
 		}
