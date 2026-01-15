@@ -10,17 +10,20 @@
 	let viewer: null | {
 		update: (p: FocusRingParams) => void;
 		exportStl: (f?: string) => void;
+		getNumTeeth: () => number;
 		destroy: () => void;
 	} = null;
 
 	let params: FocusRingParams = { ...defaultParams };
 	let advancedOpen = false;
+	let numTeeth = 0;
 
 	onMount(async () => {
 		canvas = document.getElementById('c') as HTMLCanvasElement;
 		const mod = await import('$lib/engine/bootstrap');
 		viewer = mod.createEngine(canvas);
 		viewer.update(params);
+		numTeeth = viewer.getNumTeeth();
 	});
 
 	onDestroy(() => viewer?.destroy());
@@ -28,6 +31,7 @@
 	function updateParams(p: FocusRingParams) {
 		focusRingParams.set(params);
 		viewer?.update(params);
+		numTeeth = viewer?.getNumTeeth() ?? 0;
 	}
 
 	// convenience for bindings
@@ -115,7 +119,13 @@
 					/>
 				</div>
 
-				<!-- Advanced Parameters Accordion -->
+				<div class="parameter-group">
+					<label for="numberOfTeeth" class="param-label">
+						Number of Teeth
+						<span>{numTeeth}</span>
+						<!-- Advanced Parameters Accordion -->
+					</label>
+				</div>
 				<div class="accordion">
 					<button
 						class="accordion-trigger"
@@ -170,13 +180,13 @@
 						</div>
 					{/if}
 				</div>
-			</div>
 
-			<!-- Export Button at Bottom -->
-			<div class="panel-footer">
-				<button class="btn btn-primary btn-lg" onclick={() => viewer?.exportStl()}>
-					Export STL
-				</button>
+				<!-- Export Button at Bottom -->
+				<div class="panel-footer">
+					<button class="btn btn-primary btn-lg" onclick={() => viewer?.exportStl()}>
+						Export STL
+					</button>
+				</div>
 			</div>
 		</aside>
 	</main>

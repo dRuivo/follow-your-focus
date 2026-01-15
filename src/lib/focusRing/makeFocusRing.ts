@@ -3,7 +3,10 @@ const { primitives, booleans, transforms, extrusions } = jscad;
 
 import type { FocusRingParams } from './types';
 
-export function makeFocusRing(params: FocusRingParams): jscad.geometries.geom3.Geom3 {
+export function makeFocusRing(params: FocusRingParams): {
+	geometry: jscad.geometries.geom3.Geom3;
+	numTeeth: number;
+} {
 	const { cylinder, polygon } = primitives;
 	const { extrudeLinear } = extrusions;
 	const { union, subtract } = booleans;
@@ -127,5 +130,5 @@ export function makeFocusRing(params: FocusRingParams): jscad.geometries.geom3.G
 	// Center at origin (Z=0 mid-plane)
 	result = translate([0, 0, -params.thickness / 2], result);
 
-	return result;
+	return { geometry: result, numTeeth };
 }

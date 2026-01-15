@@ -11,6 +11,7 @@ const { stlSerializer } = jscadIo;
 export type Engine = {
 	update: (p: FocusRingParams) => void;
 	exportStl: (filename?: string) => void;
+	getNumTeeth: () => number;
 	destroy: () => void;
 };
 
@@ -38,6 +39,7 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 
 	let mesh: THREE.Mesh | null = null;
 	let currentGeom: unknown = null;
+	let numTeeth = 0;
 	let raf = 0;
 
 	function resizeToDisplaySize() {
@@ -90,8 +92,14 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 
 	// --- public API
 	function update(p: FocusRingParams) {
-		currentGeom = makeFocusRing(p);
+		const result = makeFocusRing(p);
+		currentGeom = result.geometry;
+		numTeeth = result.numTeeth;
 		setMesh(currentGeom);
+	}
+
+	function getNumTeeth() {
+		return numTeeth;
 	}
 
 	function exportStl(filename = 'followFocusRing.stl') {
@@ -133,5 +141,5 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 	// Start immediately on creation
 	start();
 
-	return { update, exportStl, destroy };
+	return { update, exportStl, getNumTeeth, destroy };
 }

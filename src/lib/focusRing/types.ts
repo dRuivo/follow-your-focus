@@ -9,9 +9,9 @@ export type FocusRingParams = {
 };
 
 export const defaultParams: FocusRingParams = {
-	innerDiameter: 40,
-	thickness: 5,
-	minWidth: 2,
+	innerDiameter: 71,
+	thickness: 9,
+	minWidth: 5,
 	clearance: 0.2,
 	gearModulus: 0.8,
 	pressureAngle: 20,
