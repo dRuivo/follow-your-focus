@@ -8,6 +8,7 @@
 
 	let feedbackOpen = $state(false);
 	let introModalOpen = $state(true);
+	let mobileMenuOpen = $state(false);
 
 	let { children } = $props();
 </script>
@@ -26,7 +27,8 @@
 			<div class="brand__tag">Community tools</div>
 		</div>
 
-		<nav class="nav">
+		<!-- Desktop Navigation -->
+		<nav class="nav nav-desktop">
 			<button class="nav__btn" type="button" onclick={() => (introModalOpen = true)}>About</button>
 			<button class="nav__btn" type="button" onclick={() => (feedbackOpen = true)}>Feedback</button>
 			<a class="nav__link" href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
@@ -36,6 +38,61 @@
 				>☕ Tip</a
 			>
 		</nav>
+
+		<!-- Mobile Navigation -->
+		<nav class="nav nav-mobile">
+			<a class="nav__pill" href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
+				>☕ Tip</a
+			>
+			<button class="hamburger" type="button" onclick={() => (mobileMenuOpen = !mobileMenuOpen)}>
+				<svg
+					class="hamburger-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+					/>
+				</svg>
+			</button>
+		</nav>
+
+		<!-- Mobile Menu Dropdown -->
+		{#if mobileMenuOpen}
+			<div class="mobile-menu">
+				<button
+					class="mobile-menu__item"
+					onclick={() => {
+						introModalOpen = true;
+						mobileMenuOpen = false;
+					}}
+				>
+					About
+				</button>
+				<button
+					class="mobile-menu__item"
+					onclick={() => {
+						feedbackOpen = true;
+						mobileMenuOpen = false;
+					}}
+				>
+					Feedback
+				</button>
+				<a
+					class="mobile-menu__item"
+					href={EXTERNAL_URLS.GITHUB_REPO}
+					target="_blank"
+					rel="noreferrer"
+					onclick={() => (mobileMenuOpen = false)}
+				>
+					Source
+				</a>
+			</div>
+		{/if}
 	</header>
 	<main class="app-content">
 		{@render children()}
@@ -43,7 +100,7 @@
 	<footer class="app-footer">
 		<div class="footer__row">
 			<div class="footer__left">Built for the commons.</div>
-			<div class="footer__right">
+			<div class="footer__right footer__nav">
 				<button class="footer__btn" type="button" onclick={() => (introModalOpen = true)}>
 					About
 				</button>
@@ -116,6 +173,95 @@
 		gap: var(--space-2);
 		flex-wrap: wrap;
 		justify-content: flex-end;
+	}
+
+	.nav-desktop {
+		display: flex;
+	}
+
+	.nav-mobile {
+		display: none;
+	}
+
+	@media (max-width: 768px) {
+		.nav-desktop {
+			display: none;
+		}
+
+		.nav-mobile {
+			display: flex;
+		}
+
+		.footer__nav {
+			display: none; /* Hide only navigation part on mobile */
+		}
+	}
+
+	.hamburger {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 32px;
+		height: 32px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: var(--space-1);
+		border-radius: var(--radius-md);
+		transition: background-color 0.15s ease;
+	}
+
+	.hamburger:hover {
+		background-color: var(--app-panel-bg);
+	}
+
+	.hamburger:focus-visible {
+		outline: 2px solid var(--color-primary-500);
+		outline-offset: 2px;
+	}
+
+	.hamburger-icon {
+		width: 20px;
+		height: 20px;
+		color: var(--app-text);
+		transition: color 0.15s ease;
+	}
+
+	.mobile-menu {
+		position: absolute;
+		top: 100%;
+		right: var(--space-4);
+		background-color: var(--app-bg);
+		border: 1px solid var(--app-border);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-lg);
+		z-index: 50;
+		min-width: 150px;
+		overflow: hidden;
+	}
+
+	.mobile-menu__item {
+		display: block;
+		width: 100%;
+		padding: var(--space-3) var(--space-4);
+		text-align: left;
+		background: transparent;
+		border: none;
+		color: var(--app-text);
+		font-size: var(--text-sm);
+		font-family: var(--font-body);
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+		text-decoration: none;
+	}
+
+	.mobile-menu__item:hover {
+		background-color: var(--app-panel-bg);
+	}
+
+	.mobile-menu__item:focus-visible {
+		outline: 2px solid var(--color-primary-500);
+		outline-offset: -2px;
 	}
 
 	.nav__btn,
