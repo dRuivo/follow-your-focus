@@ -67,207 +67,211 @@
 				<h2>Parameters</h2>
 			</div>
 
-			<div class="panel-content">
-				<!-- Parameter Controls -->
-				<div class="parameter-group">
-					<label for="innerDiameter" class="param-label">Inner Diameter</label>
-					<input
-						id="innerDiameter"
-						type="number"
-						min="40"
-						max="100"
-						step="0.1"
-						bind:value={params.innerDiameter}
-						onchange={() => updateParams(params)}
-						class="numeric-input"
-					/>
-				</div>
-
-				<div class="parameter-group">
-					<label for="thickness" class="param-label">Thickness</label>
-					<input
-						id="thickness"
-						type="number"
-						min="1"
-						max="20"
-						step="0.1"
-						bind:value={params.thickness}
-						onchange={() => updateParams(params)}
-						class="numeric-input"
-					/>
-				</div>
-
-				<div class="parameter-group">
-					<label for="minWidth" class="param-label">Min Width</label>
-					<input
-						id="minWidth"
-						type="number"
-						min="0.5"
-						max="10"
-						step="0.1"
-						bind:value={params.minWidth}
-						onchange={() => updateParams(params)}
-						class="numeric-input"
-					/>
-				</div>
-
-				<div class="parameter-group">
-					<label for="printTolerance" class="param-label">Print Tolerance</label>
-					<input
-						id="printTolerance"
-						type="number"
-						min="0"
-						max="1"
-						step="0.01"
-						bind:value={params.printTolerance}
-						onchange={() => updateParams(params)}
-						class="numeric-input"
-					/>
-				</div>
-
-				<div class="parameter-group">
-					<label for="numberOfTeeth" class="param-label">
-						Number of Teeth
-						<span>{numTeeth}</span>
-					</label>
-				</div>
-
-				<!-- Chamfer Section -->
-				<div class="parameter-group">
-					<label class="checkbox-label">
-						<span>Chamfer Gear</span>
+			<div class="panel-content-wrapper">
+				<div class="panel-content">
+					<!-- Parameter Controls -->
+					<div class="parameter-group">
+						<label for="innerDiameter" class="param-label">Inner Diameter</label>
 						<input
-							type="checkbox"
-							bind:checked={params.chamfer}
+							id="innerDiameter"
+							type="number"
+							min="40"
+							max="100"
+							step="0.1"
+							bind:value={params.innerDiameter}
 							onchange={() => updateParams(params)}
-							class="checkbox-input"
+							class="numeric-input"
 						/>
-					</label>
-				</div>
-
-				{#if params.chamfer}
-					<div class="conditional-params" transition:slide={{ duration: 300 }}>
-						<div class="parameter-group">
-							<label for="chamferAngle" class="param-label">Chamfer Angle</label>
-							<input
-								id="chamferAngle"
-								type="number"
-								min="1"
-								max="45"
-								step="0.1"
-								bind:value={params.chamferAngle}
-								onchange={() => updateParams(params)}
-								class="numeric-input"
-							/>
-						</div>
 					</div>
-				{/if}
 
-				<!-- Grub Screws Section -->
-				<div class="parameter-group">
-					<label class="checkbox-label">
-						<span>Grub Screw</span>
+					<div class="parameter-group">
+						<label for="thickness" class="param-label">Thickness</label>
 						<input
-							type="checkbox"
-							bind:checked={params.grubScrew}
+							id="thickness"
+							type="number"
+							min="1"
+							max="20"
+							step="0.1"
+							bind:value={params.thickness}
 							onchange={() => updateParams(params)}
-							class="checkbox-input"
+							class="numeric-input"
 						/>
-					</label>
-				</div>
-
-				{#if params.grubScrew}
-					<div class="conditional-params" transition:slide={{ duration: 300 }}>
-						<div class="parameter-group">
-							<label for="grubScrewDiameter" class="param-label">Screw Diameter</label>
-							<input
-								id="grubScrewDiameter"
-								type="number"
-								min="1"
-								max="10"
-								step="0.1"
-								bind:value={params.grubScrewDiameter}
-								onchange={() => updateParams(params)}
-								class="numeric-input"
-							/>
-						</div>
-
-						<div class="parameter-group">
-							<label class="checkbox-label">
-								<span>Second Screw</span>
-								<input
-									type="checkbox"
-									bind:checked={params.grubScrew2}
-									onchange={() => updateParams(params)}
-									class="checkbox-input"
-								/>
-							</label>
-						</div>
 					</div>
-				{/if}
 
-				<!-- Advanced Parameters Accordion -->
-				<div class="accordion">
-					<button
-						class="accordion-trigger"
-						onclick={() => (advancedOpen = !advancedOpen)}
-						aria-expanded={advancedOpen}
-					>
-						<span class="accordion-title">Advanced Parameters</span>
-						<span class="accordion-icon" class:open={advancedOpen}>▼</span>
-					</button>
+					<div class="parameter-group">
+						<label for="minWidth" class="param-label">Min Width</label>
+						<input
+							id="minWidth"
+							type="number"
+							min="0.5"
+							max="10"
+							step="0.1"
+							bind:value={params.minWidth}
+							onchange={() => updateParams(params)}
+							class="numeric-input"
+						/>
+					</div>
 
-					{#if advancedOpen}
-						<div class="accordion-content">
+					<div class="parameter-group">
+						<label for="printTolerance" class="param-label">Print Tolerance</label>
+						<input
+							id="printTolerance"
+							type="number"
+							min="0"
+							max="1"
+							step="0.01"
+							bind:value={params.printTolerance}
+							onchange={() => updateParams(params)}
+							class="numeric-input"
+						/>
+					</div>
+
+					<div class="parameter-group">
+						<label for="numberOfTeeth" class="param-label">
+							Number of Teeth
+							<span>{numTeeth}</span>
+						</label>
+					</div>
+
+					<!-- Chamfer Section -->
+					<div class="parameter-group">
+						<label class="checkbox-label">
+							<span>Chamfer Gear</span>
+							<input
+								type="checkbox"
+								bind:checked={params.chamfer}
+								onchange={() => updateParams(params)}
+								class="checkbox-input"
+							/>
+						</label>
+					</div>
+
+					{#if params.chamfer}
+						<div class="conditional-params" transition:slide={{ duration: 300 }}>
 							<div class="parameter-group">
-								<label for="gearModulus" class="param-label">Gear Modulus</label>
+								<label for="chamferAngle" class="param-label">Chamfer Angle</label>
 								<input
-									id="gearModulus"
+									id="chamferAngle"
 									type="number"
-									min="0.1"
-									max="2"
-									step="0.01"
-									bind:value={params.gearModulus}
-									onchange={() => updateParams(params)}
-									class="numeric-input"
-								/>
-							</div>
-							<div class="parameter-group">
-								<label for="pressureAngle" class="param-label">Pressure Angle</label>
-								<input
-									id="pressureAngle"
-									type="number"
-									min="0"
+									min="1"
 									max="45"
 									step="0.1"
-									bind:value={params.pressureAngle}
-									onchange={() => updateParams(params)}
-									class="numeric-input"
-								/>
-							</div>
-							<div class="parameter-group">
-								<label for="clearance" class="param-label">Clearance</label>
-								<input
-									id="clearance"
-									type="number"
-									min="0"
-									max="1"
-									step="0.01"
-									bind:value={params.clearance}
+									bind:value={params.chamferAngle}
 									onchange={() => updateParams(params)}
 									class="numeric-input"
 								/>
 							</div>
 						</div>
 					{/if}
+
+					<!-- Grub Screws Section -->
+					<div class="parameter-group">
+						<label class="checkbox-label">
+							<span>Grub Screw</span>
+							<input
+								type="checkbox"
+								bind:checked={params.grubScrew}
+								onchange={() => updateParams(params)}
+								class="checkbox-input"
+							/>
+						</label>
+					</div>
+
+					{#if params.grubScrew}
+						<div class="conditional-params" transition:slide={{ duration: 300 }}>
+							<div class="parameter-group">
+								<label for="grubScrewDiameter" class="param-label">Screw Diameter</label>
+								<input
+									id="grubScrewDiameter"
+									type="number"
+									min="1"
+									max="10"
+									step="0.1"
+									bind:value={params.grubScrewDiameter}
+									onchange={() => updateParams(params)}
+									class="numeric-input"
+								/>
+							</div>
+
+							<div class="parameter-group">
+								<label class="checkbox-label">
+									<span>Second Screw</span>
+									<input
+										type="checkbox"
+										bind:checked={params.grubScrew2}
+										onchange={() => updateParams(params)}
+										class="checkbox-input"
+									/>
+								</label>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Advanced Parameters Accordion -->
+					<div class="accordion">
+						<button
+							class="accordion-trigger"
+							onclick={() => (advancedOpen = !advancedOpen)}
+							aria-expanded={advancedOpen}
+						>
+							<span class="accordion-title">Advanced Parameters</span>
+							<span class="accordion-icon" class:open={advancedOpen}>▼</span>
+						</button>
+
+						{#if advancedOpen}
+							<div class="accordion-content">
+								<div class="parameter-group">
+									<label for="gearModulus" class="param-label">Gear Modulus</label>
+									<input
+										id="gearModulus"
+										type="number"
+										min="0.1"
+										max="2"
+										step="0.01"
+										bind:value={params.gearModulus}
+										onchange={() => updateParams(params)}
+										class="numeric-input"
+									/>
+								</div>
+								<div class="parameter-group">
+									<label for="pressureAngle" class="param-label">Pressure Angle</label>
+									<input
+										id="pressureAngle"
+										type="number"
+										min="0"
+										max="45"
+										step="0.1"
+										bind:value={params.pressureAngle}
+										onchange={() => updateParams(params)}
+										class="numeric-input"
+									/>
+								</div>
+								<div class="parameter-group">
+									<label for="clearance" class="param-label">Clearance</label>
+									<input
+										id="clearance"
+										type="number"
+										min="0"
+										max="1"
+										step="0.01"
+										bind:value={params.clearance}
+										onchange={() => updateParams(params)}
+										class="numeric-input"
+									/>
+								</div>
+							</div>
+						{/if}
+					</div>
+
+					<!-- Reset to default -->
+					<div class="parameter-group">
+						<button class="btn btn-secondary btn-lg" onclick={resetParams}>
+							Reset to Default
+						</button>
+					</div>
 				</div>
 
-				<!-- Reset to default -->
-				<div class="parameter-group">
-					<button class="btn btn-secondary btn-lg" onclick={resetParams}> Reset to Default </button>
-				</div>
-
-				<!-- Export Button at Bottom -->
+				<!-- Sticky Export Button -->
 				<div class="panel-footer">
 					<button class="btn btn-primary btn-lg" onclick={() => viewer?.exportStl()}>
 						Export STL
@@ -325,12 +329,7 @@
 		max-width: 1400px;
 		width: 100%;
 		margin: 0 auto;
-	}
-
-	@media (max-width: 1024px) {
-		.page-main {
-			flex-direction: column;
-		}
+		min-height: calc(100vh - 200px); /* Account for header and footer */
 	}
 
 	.canvas-container {
@@ -341,36 +340,48 @@
 		padding: var(--space-4);
 		background-color: var(--app-bg);
 		overflow: hidden;
+		min-height: 400px;
+		min-width: 300px;
 	}
 
 	.canvas {
 		width: 100%;
-		max-height: 70vh;
+		height: 100%;
+		max-width: 100%;
+		max-height: 100%;
 		border-radius: var(--radius-lg);
 		background-color: var(--color-neutral-100);
 		box-shadow: var(--shadow-md);
 	}
-	@media (max-width: 1024px) {
-		.canvas-container {
-			max-height: 50vh; /* Shorter on mobile to show params */
-		}
-	}
 
 	.editor-panel {
-		width: 320px;
+		width: 350px;
 		display: flex;
 		flex-direction: column;
 		background-color: var(--app-panel-bg);
 		border-left: 1px solid var(--app-border);
 		overflow: hidden;
+		min-height: 500px;
 	}
 
 	@media (max-width: 1024px) {
+		.page-main {
+			flex-direction: column;
+			min-height: calc(100vh - 150px);
+		}
+
+		.canvas-container {
+			flex: 1;
+			min-height: 300px;
+		}
+
 		.editor-panel {
 			width: 100%;
 			border-left: none;
 			border-top: 1px solid var(--app-border);
-			max-height: 40%;
+			flex: 1;
+			min-height: 400px;
+			max-height: 50vh;
 		}
 	}
 
@@ -385,6 +396,13 @@
 		font-size: var(--text-lg);
 		font-weight: 600;
 		color: var(--app-text);
+	}
+
+	.panel-content-wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 
 	.panel-content {
@@ -454,6 +472,8 @@
 		padding: var(--space-4);
 		border-top: 1px solid var(--app-border);
 		background-color: var(--app-header-bg);
+		flex-shrink: 0;
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 	}
 
 	.panel-footer .btn {
