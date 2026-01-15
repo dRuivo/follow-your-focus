@@ -1,11 +1,66 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { EXTERNAL_URLS } from '$lib/config';
 
-	export let isOpen = false;
-	export let onClose: () => void = () => {};
+	let { isOpen = $bindable(false), onClose = () => {} } = $props();
 
-	let dialogElement: HTMLDialogElement;
+	let dialogElement: HTMLDialogElement | undefined;
+
+	function closeModal() {
+		isOpen = false;
+		onClose();
+	}
+
+	function handleBackdropClick(e: MouseEvent) {
+		if (e.target === dialogElement) {
+			closeModal();
+		}
+	}
+
+	// Watch for isOpen changes
+	$effect(() => {
+		console.log('IntroModal effect triggered, isOpen:', isOpen, 'dialogElement:', !!dialogElement);
+		if (!dialogElement) return;
+
+		if (isOpen) {
+			try {
+				console.log('Attempting to open IntroModal');
+				// Force display first
+				dialogElement.style.display = 'block';
+
+				if (typeof dialogElement.showModal === 'function') {
+					dialogElement.showModal();
+					console.log('showModal() called successfully');
+				} else {
+					dialogElement.setAttribute('open', '');
+					console.log('set open attribute');
+				}
+
+				// Focus the primary button after a short delay
+				setTimeout(() => {
+					const primaryBtn = dialogElement?.querySelector(
+						'.modal-footer .btn-primary'
+					) as HTMLButtonElement;
+					primaryBtn?.focus();
+				}, 100);
+			} catch (error) {
+				console.error('Error opening IntroModal:', error);
+			}
+		} else {
+			try {
+				console.log('Attempting to close IntroModal');
+				if (typeof dialogElement.close === 'function') {
+					dialogElement.close();
+				} else {
+					dialogElement.removeAttribute('open');
+				}
+				// Reset display
+				dialogElement.style.display = '';
+			} catch (error) {
+				console.error('Error closing IntroModal:', error);
+			}
+		}
+	});
 
 	onMount(() => {
 		// Handle Escape key
@@ -18,40 +73,6 @@
 		window.addEventListener('keydown', handleKeydown);
 		return () => window.removeEventListener('keydown', handleKeydown);
 	});
-
-	$: if (dialogElement && isOpen) {
-		if (typeof dialogElement.showModal === 'function') {
-			dialogElement.showModal();
-		} else {
-			dialogElement.setAttribute('open', '');
-		}
-		// Focus the primary button
-		setTimeout(() => {
-			const primaryBtn = dialogElement?.querySelector(
-				'.modal-footer .btn-primary'
-			) as HTMLButtonElement;
-			primaryBtn?.focus();
-		}, 0);
-	}
-
-	$: if (dialogElement && !isOpen) {
-		if (typeof dialogElement.close === 'function') {
-			dialogElement.close();
-		} else {
-			dialogElement.removeAttribute('open');
-		}
-	}
-
-	function closeModal() {
-		isOpen = false;
-		onClose();
-	}
-
-	function handleBackdropClick(e: MouseEvent) {
-		if (e.target === dialogElement) {
-			closeModal();
-		}
-	}
 
 	function openGitHub() {
 		window.open(EXTERNAL_URLS.GITHUB_REPO, '_blank');
@@ -143,21 +164,33 @@
 		padding: 0;
 		max-width: 600px;
 		width: 90vw;
-		max-height: 90vh;
+		min-height: 80vh;
+		max-height: 95vh;
 		box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 		background: var(--app-bg);
 		color: var(--app-text);
-		display: none;
-		position: fixed;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		z-index: 1000;
 	}
 
-	.intro-modal[open],
+	/* Ensure the dialog is always visible when open */
+	.intro-modal[open] {
+		display: block !important;
+		position: fixed !important;
+		left: 50% !important;
+		top: 50% !important;
+		transform: translate(-50%, -50%) !important;
+		z-index: 1000 !important;
+		visibility: visible !important;
+		opacity: 1 !important;
+	}
+
+	/* Fallback for browsers that support :modal */
 	.intro-modal:modal {
-		display: flex;
+		display: block !important;
+		position: fixed !important;
+		left: 50% !important;
+		top: 50% !important;
+		transform: translate(-50%, -50%) !important;
+		z-index: 1000 !important;
 	}
 
 	.intro-modal::backdrop {
@@ -169,6 +202,7 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		width: 100%;
 	}
 
 	.modal-content {
