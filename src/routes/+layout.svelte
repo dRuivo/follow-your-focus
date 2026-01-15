@@ -72,7 +72,8 @@
 	.app-wrapper {
 		display: flex;
 		flex-direction: column;
-		min-height: 100vh;
+		height: 100vh;
+		overflow: hidden;
 	}
 
 	.app-header {
@@ -92,6 +93,7 @@
 
 	.app-content {
 		flex: 1;
+		overflow: hidden;
 	}
 
 	.brand__name {

@@ -44,25 +44,19 @@
 	$: params = get(focusRingParams);
 </script>
 
-<div class="page-container">
-	<!-- Header -->
-	<div class="page-header">
-		<div class="header-content">
-			<div class="header-title-section">
-				<h1>Follow Your Focus</h1>
-				<p class="header-description">Design custom focus rings for your lense</p>
-			</div>
-		</div>
+<!-- Main Content Area -->
+<main class="page-main">
+	<div class="page-title">
+		<h1 style="color: var(--color-primary-600);">Focus Ring Designer</h1>
+		<p>Design and customize focus rings for your camera lens</p>
 	</div>
-
-	<!-- Main Content Area -->
-	<main class="page-main">
+	<div class="content-wrapper">
 		<div class="canvas-container">
 			<canvas id="c" class="canvas"></canvas>
 		</div>
 
 		<!-- Right Panel - Parameter Editor -->
-		<aside class="editor-panel">
+		<aside class="panel editor-panel">
 			<div class="panel-header">
 				<h2>Parameters</h2>
 			</div>
@@ -132,37 +126,6 @@
 							<span>{numTeeth}</span>
 						</label>
 					</div>
-
-					<!-- Chamfer Section -->
-					<div class="parameter-group">
-						<label class="checkbox-label">
-							<span>Chamfer Gear</span>
-							<input
-								type="checkbox"
-								bind:checked={params.gearChamfer}
-								onchange={() => updateParams(params)}
-								class="checkbox-input"
-							/>
-						</label>
-					</div>
-
-					{#if params.gearChamfer}
-						<div class="conditional-params" transition:slide={{ duration: 300 }}>
-							<div class="parameter-group">
-								<label for="chamferAngle" class="param-label">Chamfer Angle</label>
-								<input
-									id="chamferAngle"
-									type="number"
-									min="1"
-									max="45"
-									step="0.1"
-									bind:value={params.gearChamferAngle}
-									onchange={() => updateParams(params)}
-									class="numeric-input"
-								/>
-							</div>
-						</div>
-					{/if}
 
 					<!-- Chamfer Section -->
 					<div class="parameter-group">
@@ -341,57 +304,39 @@
 				</div>
 			</div>
 		</aside>
-	</main>
-</div>
+	</div>
+</main>
 
 <style>
-	.page-container {
+	.page-main {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		background-color: var(--app-bg);
-		color: var(--app-text);
-	}
-
-	.page-header {
-		background-color: var(--app-header-bg);
-		border-bottom: 1px solid var(--app-border);
-		padding: var(--space-6);
-		box-shadow: var(--shadow-sm);
-	}
-
-	.header-content {
 		max-width: 1400px;
-		margin: 0 auto;
 		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		margin: 0 auto;
+		overflow: hidden;
 	}
 
-	.header-title-section h1 {
-		margin: 0 0 var(--space-2) 0;
-		font-size: var(--text-3xl);
-		font-weight: 700;
-		color: var(--color-primary-600);
+	.page-title {
+		padding: var(--space-6) var(--space-6) var(--space-4);
+		text-align: left;
+		border-bottom: 1px solid var(--app-border);
+		background-color: var(--app-header-bg);
+		flex-shrink: 0;
 	}
 
-	.header-description {
-		margin: 0;
-		font-size: var(--text-base);
+	.page-title p {
+		/* Using app.css p styles with custom color */
 		color: var(--app-text-muted);
 	}
 
-	.page-main {
+	.content-wrapper {
 		flex: 1;
 		display: flex;
 		flex-direction: row;
 		gap: 0;
 		overflow: hidden;
-		max-width: 1400px;
-		width: 100%;
-		margin: 0 auto;
-		min-height: calc(100vh - 200px); /* Account for header and footer */
 	}
 
 	.canvas-container {
@@ -399,11 +344,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: var(--space-4);
+		padding: var(--space-6);
 		background-color: var(--app-bg);
 		overflow: hidden;
-		min-height: 400px;
-		min-width: 300px;
+		max-height: 70vh;
+		min-height: 300px;
 	}
 
 	.canvas {
@@ -411,30 +356,27 @@
 		height: 100%;
 		max-width: 100%;
 		max-height: 100%;
-		border-radius: var(--radius-lg);
+		border-radius: var(--radius-xl);
 		background-color: var(--color-neutral-100);
-		box-shadow: var(--shadow-md);
+		box-shadow: var(--shadow-lg);
+		border: 1px solid var(--app-border);
 	}
 
 	.editor-panel {
 		width: 350px;
-		display: flex;
-		flex-direction: column;
-		background-color: var(--app-panel-bg);
 		border-left: 1px solid var(--app-border);
 		overflow: hidden;
-		min-height: 500px;
 	}
 
 	@media (max-width: 1024px) {
-		.page-main {
+		.content-wrapper {
 			flex-direction: column;
-			min-height: calc(100vh - 150px);
 		}
 
 		.canvas-container {
-			flex: 1;
-			min-height: 300px;
+			max-height: 40vh;
+			min-height: 250px;
+			flex: 0 0 auto;
 		}
 
 		.editor-panel {
@@ -442,22 +384,7 @@
 			border-left: none;
 			border-top: 1px solid var(--app-border);
 			flex: 1;
-			min-height: 400px;
-			max-height: 50vh;
 		}
-	}
-
-	.panel-header {
-		padding: var(--space-4);
-		border-bottom: 1px solid var(--app-border);
-		background-color: var(--app-header-bg);
-	}
-
-	.panel-header h2 {
-		margin: 0;
-		font-size: var(--text-lg);
-		font-weight: 600;
-		color: var(--app-text);
 	}
 
 	.panel-content-wrapper {
@@ -470,10 +397,10 @@
 	.panel-content {
 		flex: 1;
 		overflow-y: auto;
-		padding: var(--space-4);
+		padding: var(--space-6);
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-4);
+		gap: var(--space-6);
 	}
 
 	.parameter-group {
@@ -531,11 +458,11 @@
 	}
 
 	.panel-footer {
-		padding: var(--space-4);
+		padding: var(--space-6);
 		border-top: 1px solid var(--app-border);
 		background-color: var(--app-header-bg);
 		flex-shrink: 0;
-		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.panel-footer .btn {
