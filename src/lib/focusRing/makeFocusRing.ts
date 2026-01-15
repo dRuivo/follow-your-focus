@@ -10,7 +10,7 @@ export function makeFocusRing(params: FocusRingParams): {
 	const { cylinder, polygon } = primitives;
 	const { extrudeLinear } = extrusions;
 	const { union, subtract } = booleans;
-	const { rotateZ, translate } = transforms;
+	const { rotate, rotateZ, translate } = transforms;
 
 	// --- Basic guards (prevents silent garbage geometry)
 	if (params.gearModulus <= 0) throw new Error('gearModulus must be > 0');
@@ -129,6 +129,33 @@ export function makeFocusRing(params: FocusRingParams): {
 
 	// Center at origin (Z=0 mid-plane)
 	result = translate([0, 0, -params.thickness / 2], result);
+
+	if (params.grubScrew) {
+		// --- Grub screw hole
+		const screw = cylinder({
+			radius: params.grubScrewDiameter / 2 - 2 * params.printTolerance,
+			height: outerRadius + eps,
+			segments: 128
+		});
+		// Scew hole 1
+		result = subtract(
+			result,
+			translate(
+				[outerRadius - eps / 2, 0, -params.thickness / 2],
+				rotate([0, Math.PI / 2, 0], screw)
+			)
+		);
+		if (params.grubScrew2) {
+			// Scew hole 2
+			result = subtract(
+				result,
+				translate(
+					[0, outerRadius - eps / 2, -params.thickness / 2],
+					rotate([Math.PI / 2, 0, 0], screw)
+				)
+			);
+		}
+	}
 
 	return { geometry: result, numTeeth };
 }

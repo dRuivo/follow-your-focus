@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 	import { get } from 'svelte/store';
 
 	import { focusRingParams, paramsFromUrl, paramsToSearchParams } from '$lib/focusRing/store';
@@ -123,9 +124,53 @@
 					<label for="numberOfTeeth" class="param-label">
 						Number of Teeth
 						<span>{numTeeth}</span>
-						<!-- Advanced Parameters Accordion -->
 					</label>
 				</div>
+
+				<!-- Grub Screws Section -->
+				<div class="parameter-group">
+					<label class="checkbox-label">
+						<span>Grub Screw</span>
+						<input
+							type="checkbox"
+							bind:checked={params.grubScrew}
+							onchange={() => updateParams(params)}
+							class="checkbox-input"
+						/>
+					</label>
+				</div>
+
+				{#if params.grubScrew}
+					<div class="conditional-params" transition:slide={{ duration: 300 }}>
+						<div class="parameter-group">
+							<label for="grubScrewDiameter" class="param-label">Screw Diameter</label>
+							<input
+								id="grubScrewDiameter"
+								type="number"
+								min="1"
+								max="10"
+								step="0.1"
+								bind:value={params.grubScrewDiameter}
+								onchange={() => updateParams(params)}
+								class="numeric-input"
+							/>
+						</div>
+
+						<div class="parameter-group">
+							<label class="checkbox-label">
+								<span>Second Screw</span>
+								<input
+									type="checkbox"
+									bind:checked={params.grubScrew2}
+									onchange={() => updateParams(params)}
+									class="checkbox-input"
+								/>
+							</label>
+						</div>
+					</div>
+				{/if}
+
+				<!-- Advanced Parameters Accordion -->
 				<div class="accordion">
 					<button
 						class="accordion-trigger"
@@ -372,6 +417,34 @@
 
 	.panel-footer .btn {
 		width: 100%;
+	}
+
+	.checkbox-label {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		cursor: pointer;
+		font-weight: 500;
+		font-size: var(--text-sm);
+		color: var(--app-text);
+		user-select: none;
+	}
+
+	.checkbox-input {
+		width: 18px;
+		height: 18px;
+		cursor: pointer;
+		accent-color: var(--color-primary-600);
+	}
+
+	.conditional-params {
+		padding: var(--space-3);
+		border: 1px solid var(--app-border);
+		border-radius: var(--radius-lg);
+		background-color: var(--color-neutral-50);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
 	}
 
 	.accordion {

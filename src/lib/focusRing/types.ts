@@ -6,6 +6,9 @@ export type FocusRingParams = {
 	gearModulus: number;
 	pressureAngle: number;
 	printTolerance: number;
+	grubScrew: boolean;
+	grubScrew2: boolean;
+	grubScrewDiameter: number;
 };
 
 export const defaultParams: FocusRingParams = {
@@ -15,5 +18,8 @@ export const defaultParams: FocusRingParams = {
 	clearance: 0.2,
 	gearModulus: 0.8,
 	pressureAngle: 20,
-	printTolerance: 0.1
+	printTolerance: 0.1,
+	grubScrew: true,
+	grubScrew2: false,
+	grubScrewDiameter: 3
 };
