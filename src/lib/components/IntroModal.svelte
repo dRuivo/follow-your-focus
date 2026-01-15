@@ -88,6 +88,7 @@
 
 				<section class="modal-section">
 					<h2>Why this exists</h2>
+					<p>Technical tools should serve people, not extract value from them</p>
 					<p>
 						Professional gear is often overpriced, proprietary, or designed to be replaced rather
 						than repaired.

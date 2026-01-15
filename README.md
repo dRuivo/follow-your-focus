@@ -117,6 +117,22 @@ If this tool helps you, you can:
 
 ---
 
+## Feedback & Suggestions
+
+This project grows through shared knowledge.
+
+If you have:
+
+- feature ideas
+- usability feedback
+- questions
+- edge cases from real-world use
+
+Please open a GitHub Issue.
+Thoughtful suggestions and lived experience are especially welcome.
+
+---
+
 ## A note on intent
 
 This project is part of a broader effort to build tools that strengthen communities, extend the life of materials, and resist extractive technology models.
