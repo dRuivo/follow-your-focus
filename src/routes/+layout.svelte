@@ -23,25 +23,25 @@
 <div class="app-wrapper">
 	<header class="app-header">
 		<div class="brand">
-			<div class="brand__name">Follow Your Focus</div>
-			<div class="brand__tag">Community tools</div>
+			<div class="brand-name">Follow Your Focus</div>
+			<div class="brand-tag">Community tools</div>
 		</div>
 
 		<!-- Desktop Navigation -->
 		<nav class="nav nav-desktop">
-			<button class="nav__btn" type="button" onclick={() => (introModalOpen = true)}>About</button>
-			<button class="nav__btn" type="button" onclick={() => (feedbackOpen = true)}>Feedback</button>
-			<a class="nav__link" href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
+			<button class="nav-btn" type="button" onclick={() => (introModalOpen = true)}>About</button>
+			<button class="nav-btn" type="button" onclick={() => (feedbackOpen = true)}>Feedback</button>
+			<a class="nav-link" href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
 				>Source</a
 			>
-			<a class="nav__pill" href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
+			<a class="nav-pill" href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
 				>☕ Tip</a
 			>
 		</nav>
 
 		<!-- Mobile Navigation -->
 		<nav class="nav nav-mobile">
-			<a class="nav__pill" href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
+			<a class="nav-pill" href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
 				>☕ Tip</a
 			>
 			<button
@@ -70,7 +70,7 @@
 		{#if mobileMenuOpen}
 			<div class="mobile-menu">
 				<button
-					class="mobile-menu__item"
+					class="mobile-menu-item"
 					onclick={() => {
 						introModalOpen = true;
 						mobileMenuOpen = false;
@@ -79,7 +79,7 @@
 					About
 				</button>
 				<button
-					class="mobile-menu__item"
+					class="mobile-menu-item"
 					onclick={() => {
 						feedbackOpen = true;
 						mobileMenuOpen = false;
@@ -88,7 +88,7 @@
 					Feedback
 				</button>
 				<a
-					class="mobile-menu__item"
+					class="mobile-menu-item"
 					href={EXTERNAL_URLS.GITHUB_REPO}
 					target="_blank"
 					rel="noreferrer"
@@ -103,10 +103,10 @@
 		{@render children()}
 	</main>
 	<footer class="app-footer">
-		<div class="footer__row">
-			<div class="footer__left">Built for the commons.</div>
-			<div class="footer__right footer__nav">
-				<div class="footer__meta">Code: CC BY-NC 4.0 · Outputs: CC BY 4.0 · v0.1.0</div>
+		<div class="footer-row">
+			<div class="footer-left">Built for the commons.</div>
+			<div class="footer-right footer-nav">
+				<div class="footer-meta">Code: CC BY-NC 4.0 · Outputs: CC BY 4.0 · v0.1.0</div>
 			</div>
 		</div>
 	</footer>
@@ -146,7 +146,7 @@
 		overflow: hidden;
 	}
 
-	.brand__name {
+	.brand-name {
 		font-family: var(--font-heading);
 		font-weight: 700;
 		letter-spacing: -0.025em;
@@ -154,7 +154,7 @@
 		color: var(--app-text);
 	}
 
-	.brand__tag {
+	.brand-tag {
 		font-size: var(--text-xs);
 		color: var(--app-text-muted);
 		margin-top: var(--space-1);
@@ -185,7 +185,7 @@
 			display: flex;
 		}
 
-		.footer__nav {
+		.footer-nav {
 			display: none; /* Hide only navigation part on mobile */
 		}
 	}
@@ -233,7 +233,7 @@
 		overflow: hidden;
 	}
 
-	.mobile-menu__item {
+	.mobile-menu-item {
 		display: block;
 		width: 100%;
 		padding: var(--space-3) var(--space-4);
@@ -248,16 +248,16 @@
 		text-decoration: none;
 	}
 
-	.mobile-menu__item:hover {
+	.mobile-menu-item:hover {
 		background-color: var(--app-panel-bg);
 	}
 
-	.mobile-menu__item:focus-visible {
+	.mobile-menu-item:focus-visible {
 		outline: 2px solid var(--color-primary-500);
 		outline-offset: -2px;
 	}
 
-	.nav__btn {
+	.nav-btn {
 		appearance: none;
 		border: none;
 		background: transparent;
@@ -270,16 +270,16 @@
 		transition: all 0.15s ease;
 	}
 
-	.nav__btn:hover {
+	.nav-btn:hover {
 		background-color: var(--app-panel-bg);
 	}
 
-	.nav__btn:focus-visible {
+	.nav-btn:focus-visible {
 		outline: 2px solid var(--color-primary-500);
 		outline-offset: 2px;
 	}
 
-	.nav__link {
+	.nav-link {
 		text-decoration: none;
 		color: var(--app-text);
 		padding: var(--space-1) var(--space-2);
@@ -288,16 +288,16 @@
 		transition: all 0.15s ease;
 	}
 
-	.nav__link:hover {
+	.nav-link:hover {
 		background-color: var(--app-panel-bg);
 	}
 
-	.nav__link:focus-visible {
+	.nav-link:focus-visible {
 		outline: 2px solid var(--color-primary-500);
 		outline-offset: 2px;
 	}
 
-	.nav__pill {
+	.nav-pill {
 		text-decoration: none;
 		color: var(--color-warning-600);
 		padding: var(--space-1) var(--space-3);
@@ -309,13 +309,13 @@
 		transition: all 0.15s ease;
 	}
 
-	.nav__pill:hover {
+	.nav-pill:hover {
 		background-color: var(--color-warning-50);
 		border-color: var(--color-warning-700);
 		color: var(--color-warning-700);
 	}
 
-	.nav__pill:focus-visible {
+	.nav-pill:focus-visible {
 		outline: 2px solid var(--color-warning-600);
 		outline-offset: 2px;
 	}
@@ -328,7 +328,7 @@
 		flex-shrink: 0;
 	}
 
-	.footer__row {
+	.footer-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -336,12 +336,12 @@
 		flex-wrap: wrap;
 	}
 
-	.footer__left {
+	.footer-left {
 		font-size: var(--text-sm);
 		color: var(--app-text-muted);
 	}
 
-	.footer__right {
+	.footer-right {
 		display: flex;
 		align-items: center;
 		gap: var(--space-1);
@@ -349,14 +349,14 @@
 		justify-content: flex-end;
 	}
 
-	.footer__meta {
+	.footer-meta {
 		margin-top: var(--space-2);
 		font-size: var(--text-xs);
 		color: var(--app-text-muted);
 	}
 
 	@media (max-width: 520px) {
-		.brand__tag {
+		.brand-tag {
 			display: none;
 		}
 	}

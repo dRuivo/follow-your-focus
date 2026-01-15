@@ -525,7 +525,7 @@
 		padding: var(--space-3);
 		border: 1px solid var(--app-border);
 		border-radius: var(--radius-lg);
-		background-color: var(--color-neutral-50);
+		background-color: var(--app-panel-bg);
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-3);

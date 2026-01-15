@@ -100,17 +100,33 @@ src/
 
 ```typescript
 export type FocusRingParams = {
-	innerDiameter: number; // Hole size: 40-100 mm
-	thickness: number; // Ring depth: 1-20 mm
-	minWidth: number; // Tooth base width: 0.5-10 mm
-	clearance: number; // Gear clearance: 0-1 mm
-	gearModulus: number; // Tooth size: 0.1-2 mm
+	// Core geometry
+	innerDiameter: number; // Inner bore hole size: 40-100 mm
+	thickness: number; // Ring depth (Z-axis): 1-20 mm
+	minWidth: number; // Minimum tooth base width: 0.5-10 mm
+
+	// Gear teeth design
+	gearModulus: number; // Tooth size (standard gear parameter): 0.1-2 mm
 	pressureAngle: number; // Involute angle: 0-45°
-	printTolerance: number; // Manufacturing tolerance: 0-1 mm
+	clearance: number; // Space between tooth root and bore: 0-1 mm
+	printTolerance: number; // Manufacturing tolerance buffer: 0-1 mm
+
+	// Gear side chamfering (optional beveled edges)
+	gearChamfer: boolean; // Enable/disable chamfer on gear sides
+	gearChamferAngle: number; // Bevel angle in degrees: 1-45°
+
+	// Inner bore chamfering (optional beveled edges)
+	innerChamfer: boolean; // Enable/disable chamfer on inner bore
+	innerChamferSize: number; // Chamfer size in mm: 0.1-5 mm
+
+	// Grub screw mounting holes (optional)
+	grubScrew: boolean; // Enable/disable grub screw hole
+	grubScrewDiameter: number; // Hole diameter: 1-10 mm
+	grubScrew2: boolean; // Enable/disable second grub screw hole (perpendicular)
 };
 ```
 
-**Default values**: Sensible starting point for a follow focus ring (inner diameter 40mm, gear modulus 0.8mm, etc.)
+**Default values**: Sensible starting point for a follow focus ring (inner diameter 40mm, gear modulus 0.8mm, pressure angle 20°, etc.)
 
 #### `store.ts` - State Management
 
@@ -120,27 +136,69 @@ export type FocusRingParams = {
 
 #### `makeFocusRing.ts` - CSG Geometry Generation
 
-This is the **mathematical heart** of the application. It:
+This is the **mathematical heart** of the application. It generates precise involute gear teeth and applies optional features.
 
-1. **Calculates gear geometry** from parameters:
+**Algorithm overview**:
+
+1. **Parameter Validation**:
+   - Guards against invalid inputs (negative/zero values, out-of-range angles)
+   - Validates that geometry is physically possible (e.g., root radius > inner radius)
+   - Throws descriptive errors if constraints violated
+
+2. **Gear Geometry Calculation**:
    - Converts modulus to circular pitch: `p = πm`
-   - Computes number of teeth based on desired root radius and clearance
-   - Calculates involute radii (pitch, base, outer, root)
+   - Calculates number of teeth to maintain minimum width: `z = ⌈2(r_root + dedendum) / m⌉`
+   - Computes standard gear radii:
+     - `pitchRadius = m × z / 2` (engagement point)
+     - `baseRadius = pitchRadius × cos(pressureAngle)` (involute origin)
+     - `outerRadius = pitchRadius + m` (outer edge)
+     - `rootRadius = pitchRadius - (m + clearance)` (tooth base)
 
-2. **Generates involute curve** (mathematically accurate gear teeth):
-   - Uses parametric involute formula: `angle = tanLength / baseRadius`
-   - Creates resolution-based points along the involute profile
-   - Mirrors to create full tooth profile
+3. **Involute Tooth Profile Generation**:
+   - Creates a single 2D tooth polygon using involute curve mathematics
+   - Uses **power law approximation** for involute angle: `angle = maxAngle × t^(2/3)` for smooth distribution
+   - Generates 12 resolution points per side (24 total per tooth)
+   - **Side A**: Extends from involute base outward (right flank)
+   - **Side B**: Mirrors the profile (left flank), creating symmetrical tooth shape
+   - Tooth width at base determined by pressure angle and circular pitch
 
-3. **Applies boolean operations** (CSG):
-   - Extrudes 2D tooth to 3D
-   - Arrays teeth around center (`numTeeth` times)
-   - Unions all teeth
-   - Subtracts inner cylinder to create hole
+4. **3D Extrusion & Boolean Operations**:
+   - Extrudes 2D tooth polygon to 3D with given thickness
+   - Arrays tooth around center: `for i in 0..numTeeth: rotate(2πi/z, tooth3d)`
+   - Unions all teeth together
+   - Creates root disk (solid cylinder at base) for structural integrity
+   - Subtracts inner bore cylinder to create mounting hole
+   - Centers geometry at Z=0 midplane
 
-4. **Returns JSCAD Geom3** object ready for rendering/export
+5. **Optional Features** (applied sequentially):
 
-**Error handling**: Validates parameters to prevent invalid geometry (e.g., root radius can't be smaller than inner radius)
+   **Grub Screw Holes**:
+   - Creates cylindrical holes for mechanical fastening
+   - Hole 1: Along X-axis at outer radius (radial mounting)
+   - Hole 2 (optional): Along Y-axis, perpendicular to hole 1
+   - Diameter: `params.grubScrewDiameter - 2×printTolerance`
+   - Subtracted from final geometry using boolean difference
+
+   **Gear Side Chamfering** (beveled gear edges):
+   - Creates angled cuts on top and bottom gear faces
+   - Uses triangular profile rotated 360° around Z-axis
+   - Angle: `params.gearChamferAngle` (degrees from horizontal)
+   - Chamfer tapers from root radius inward
+   - Applied to both top and bottom faces via separate boolean operations
+
+   **Inner Bore Chamfering** (beveled bore edges):
+   - Creates angled cuts on inner bore edges (top and bottom)
+   - Triangular profile rotated 360° around Z-axis
+   - Bevel size: `params.innerChamferSize` (radial distance)
+   - Eases sharp bore edges for assembly
+
+**Return value**: `{ geometry: Geom3, numTeeth: number }` - final CSG geometry and calculated tooth count
+
+**Performance notes**:
+
+- Segment count tied to tooth count for consistent resolution: `Math.max(64, numTeeth × 4)`
+- All CSG operations (union, subtract) are CPU-bound, ~100-300ms depending on complexity
+- Could be moved to Web Worker for non-blocking UI in future
 
 ---
 
@@ -245,14 +303,23 @@ Main interactive interface:
 
 **Right side parameter panel** (320px fixed on desktop, 100% on mobile):
 
-- **Basic parameters** (7 numeric inputs):
-  - Inner Diameter, Thickness, Min Width
-  - Printability: Clearance, Print Tolerance
-  - Gear Design: Gear Modulus, Pressure Angle
-- **Advanced parameters** (accordion, initially collapsed):
-  - Same parameters with smaller UI
-- **Export button** (large, primary color):
-  - Calls `viewer.exportStl()` to download STL file
+- **Basic Parameters** (numeric inputs):
+  - Geometry: Inner Diameter, Thickness, Min Width
+  - Tolerances: Print Tolerance
+  - Gear Teeth: Gear Modulus, Pressure Angle, Clearance
+
+- **Optional Features** (collapsible sections with checkboxes):
+  - **Chamfer Gear**: Toggle gear side beveling + Chamfer Angle slider
+  - **Chamfer Inner Bore**: Toggle bore beveling + Chamfer Size slider
+  - **Grub Screw**: Toggle screw holes + Screw Diameter + Second Screw toggle
+
+- **Advanced Parameters** (accordion, initially collapsed):
+  - Gear Modulus, Pressure Angle, Clearance (duplicated for fine-tuning)
+  - "Number of Teeth" display (read-only, calculated from parameters)
+
+- **Action Buttons**:
+  - "Reset to Default": Restores all parameters to defaults
+  - "Export STL" (sticky footer): Downloads geometry as binary STL file
 
 **State management**:
 
@@ -407,36 +474,67 @@ Parameters restored, geometry regenerates
 
 The core of `makeFocusRing.ts` implements **involute curve tooth profiling**, which is the standard for mechanical gears:
 
-**Involute parametric formula**:
+**Involute curve mathematics**:
 
-- Given base radius and pressure angle, compute involute curve
-- Angle φ = tan(φ) - φ (transcendental equation, solved numerically with power law approximation)
-- Point on involute: `(baseRadius * cos(φ) + tanLength * sin(φ), ...)`
+The involute is generated using parametric equations where a point moves along a line tangent to the base circle:
+
+```
+angle = tanLength / baseRadius  (tangent length unwrapped from base radius)
+x = baseRadius·cos(angle) + tanLength·sin(angle)
+y = baseRadius·sin(angle) - tanLength·cos(angle)
+```
+
+**Power Law Approximation** (used for smooth tooth distribution):
+
+Rather than linear steps along the involute, the implementation uses a power law to concentrate resolution at the tooth tip:
+
+```
+t ∈ [0, 1]  (normalized parameter)
+angle = maxAngle × t^(2/3)  (curve heavily weighted toward tip)
+```
+
+This provides better numerical stability and smoother geometry than linear parametrization.
+
+**Tooth Construction**:
+
+1. Side A: Involute profile from base to outer radius
+2. Side B: Mirrored involute profile (opposite flank)
+3. Closed polygon: Both sides joined to form complete tooth cross-section
+4. The tooth angle is calculated from the pressure angle and gear pitch
 
 **Why involutes?**
 
-- Pressure angle remains constant (smooth engagement)
-- Gear ratio is constant
-- Forgiveness to center distance variations
-- Standard for machined gears
+- **Constant pressure angle**: Maintains smooth, efficient tooth engagement
+- **Constant velocity ratio**: Gear ratio doesn't vary with tooth position
+- **Forgiving tolerance**: Works even if center distance varies slightly
+- **Industry standard**: All mechanical gears use involute profiles
+- **Mathematically precise**: No approximation in tooth shape (except power law for sampling)
 
-### Number of Teeth Calculation
+### Gear Geometry Calculations
 
-```typescript
-const targetRootRadius = innerRadius + minWidth;
-const numTeeth = Math.ceil((2 * (targetRootRadius + dedendum)) / gearModulus);
-```
-
-Ensures minimum width between inner bore and tooth base.
-
-### Radius Calculations (Standard Gear Formulas)
+Standard gear formulas used to ensure proper tooth engagement:
 
 ```typescript
-const pitchRadius = (numTeeth * gearModulus) / 2;
-const outerRadius = pitchRadius + gearModulus;
-const rootRadius = pitchRadius - (gearModulus + clearance);
-const baseRadius = pitchRadius * cos(pressureAngle);
+// Given parameters
+circularPitch = π × gearModulus
+numTeeth = ⌈2(targetRootRadius + dedendum) / gearModulus⌉
+
+// Calculated radii
+pitchRadius = (numTeeth × gearModulus) / 2
+baseRadius = pitchRadius × cos(pressureAngle°)
+outerRadius = pitchRadius + gearModulus
+rootRadius = pitchRadius - (gearModulus + clearance)
+dedendum = gearModulus + clearance
+addendum = gearModulus
 ```
+
+**Number of Teeth**: Calculated to ensure `minWidth` space between inner bore and tooth root. Prevents undercuts and ensures structural integrity.
+
+**Radii Hierarchy**:
+
+- `innerRadius < rootRadius < baseRadius < pitchRadius < outerRadius`
+
+Each radius serves a specific purpose in gear kinematics and CSG construction.
 
 ---
 
@@ -559,14 +657,18 @@ pnpm run build    # Production build
 
 ## Future Enhancement Opportunities
 
-1. **Web Workers**: Move CSG generation to worker thread (prevent UI blocking)
+1. **Web Workers**: Move CSG generation to worker thread (prevent UI blocking on large tooth counts)
 2. **Undo/Redo**: State history with parameter snapshots
-3. **Presets**: Save/load common configurations
-4. **Mesh simplification**: Reduce polygon count for export
-5. **Export formats**: STEP, OBJ, Fusion360 native format
-6. **Collaborative**: Real-time parameter sharing (WebSockets)
-7. **Advanced UI**: Gear tooth animation, cross-section view
-8. **Localization**: Multi-language support
+3. **Presets**: Save/load common configurations (localStorage or cloud)
+4. **STL Mesh Optimization**: Reduce polygon count for faster exports
+5. **Export Formats**: STEP, OBJ, Fusion360 native format, GLTF
+6. **Real-time Preview**: Live STL mesh preview before export
+7. **Collaborative**: Real-time parameter sharing (WebSockets)
+8. **Advanced UI**: Gear tooth animation, cross-section view, 2D tooth profile display
+9. **Localization**: Multi-language support
+10. **Parameter Constraints**: Smart validation with UI feedback
+11. **Gear Simulation**: Mesh two gears and simulate rotation
+12. **Custom Bore Profiles**: Non-circular inner bores
 
 ---
 
