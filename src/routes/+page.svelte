@@ -29,6 +29,11 @@
 
 	onDestroy(() => viewer?.destroy());
 
+	function resetParams() {
+		params = { ...defaultParams };
+		updateParams(params);
+	}
+
 	function updateParams(p: FocusRingParams) {
 		focusRingParams.set(params);
 		viewer?.update(params);
@@ -127,6 +132,37 @@
 					</label>
 				</div>
 
+				<!-- Chamfer Section -->
+				<div class="parameter-group">
+					<label class="checkbox-label">
+						<span>Chamfer Gear</span>
+						<input
+							type="checkbox"
+							bind:checked={params.chamfer}
+							onchange={() => updateParams(params)}
+							class="checkbox-input"
+						/>
+					</label>
+				</div>
+
+				{#if params.chamfer}
+					<div class="conditional-params" transition:slide={{ duration: 300 }}>
+						<div class="parameter-group">
+							<label for="chamferAngle" class="param-label">Chamfer Angle</label>
+							<input
+								id="chamferAngle"
+								type="number"
+								min="1"
+								max="45"
+								step="0.1"
+								bind:value={params.chamferAngle}
+								onchange={() => updateParams(params)}
+								class="numeric-input"
+							/>
+						</div>
+					</div>
+				{/if}
+
 				<!-- Grub Screws Section -->
 				<div class="parameter-group">
 					<label class="checkbox-label">
@@ -224,6 +260,11 @@
 							</div>
 						</div>
 					{/if}
+				</div>
+
+				<!-- Reset to default -->
+				<div class="parameter-group">
+					<button class="btn btn-secondary btn-lg" onclick={resetParams}> Reset to Default </button>
 				</div>
 
 				<!-- Export Button at Bottom -->

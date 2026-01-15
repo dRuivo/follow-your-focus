@@ -9,6 +9,8 @@ export type FocusRingParams = {
 	grubScrew: boolean;
 	grubScrew2: boolean;
 	grubScrewDiameter: number;
+	chamfer: boolean;
+	chamferAngle: number;
 };
 
 export const defaultParams: FocusRingParams = {
@@ -21,5 +23,7 @@ export const defaultParams: FocusRingParams = {
 	printTolerance: 0.1,
 	grubScrew: true,
 	grubScrew2: false,
-	grubScrewDiameter: 3
+	grubScrewDiameter: 3,
+	chamfer: true,
+	chamferAngle: 30
 };

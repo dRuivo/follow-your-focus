@@ -3,12 +3,14 @@ const { primitives, booleans, transforms, extrusions } = jscad;
 
 import type { FocusRingParams } from './types';
 
+const MAX_SEGMENTS = 512;
+
 export function makeFocusRing(params: FocusRingParams): {
 	geometry: jscad.geometries.geom3.Geom3;
 	numTeeth: number;
 } {
 	const { cylinder, polygon } = primitives;
-	const { extrudeLinear } = extrusions;
+	const { extrudeLinear, extrudeRotate } = extrusions;
 	const { union, subtract } = booleans;
 	const { rotate, rotateZ, translate } = transforms;
 
@@ -112,7 +114,7 @@ export function makeFocusRing(params: FocusRingParams): {
 	const rootDisk = cylinder({
 		radius: rootRadius,
 		height: params.thickness,
-		segments: Math.max(64, numTeeth * 4)
+		segments: Math.max(MAX_SEGMENTS, numTeeth * 4)
 	});
 
 	// --- Bore cutout (inner diameter)
@@ -120,7 +122,7 @@ export function makeFocusRing(params: FocusRingParams): {
 	const bore = cylinder({
 		radius: innerRadius + params.printTolerance,
 		height: params.thickness + eps,
-		segments: Math.max(64, numTeeth * 4)
+		segments: Math.max(MAX_SEGMENTS, numTeeth * 4)
 	});
 
 	// let result = teethUnion;
@@ -155,6 +157,28 @@ export function makeFocusRing(params: FocusRingParams): {
 				)
 			);
 		}
+	}
+
+	// --- Chamfer gear sides
+	if (params.chamfer) {
+		const chamferTan = Math.tan((params.chamferAngle * Math.PI) / 180);
+		const t = params.thickness / 2;
+		const chamferPolygon = polygon({
+			points: [
+				[rootRadius - eps * chamferTan, 0],
+				[outerRadius + eps, 0 - (outerRadius - rootRadius + 2 * eps) * chamferTan],
+				[outerRadius + eps, 0]
+			]
+		});
+		const extrudedChamfer = extrudeRotate(
+			{ segments: Math.max(MAX_SEGMENTS, numTeeth * 4), startAngle: 0, angle: 2 * Math.PI },
+			chamferPolygon
+		);
+		result = subtract(
+			result,
+			translate([0, 0, -params.thickness], rotate([Math.PI, 0, 0], extrudedChamfer))
+		);
+		result = subtract(result, extrudedChamfer);
 	}
 
 	return { geometry: result, numTeeth };
