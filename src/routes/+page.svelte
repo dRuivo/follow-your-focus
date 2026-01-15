@@ -139,14 +139,14 @@
 							<span>Chamfer Gear</span>
 							<input
 								type="checkbox"
-								bind:checked={params.chamfer}
+								bind:checked={params.gearChamfer}
 								onchange={() => updateParams(params)}
 								class="checkbox-input"
 							/>
 						</label>
 					</div>
 
-					{#if params.chamfer}
+					{#if params.gearChamfer}
 						<div class="conditional-params" transition:slide={{ duration: 300 }}>
 							<div class="parameter-group">
 								<label for="chamferAngle" class="param-label">Chamfer Angle</label>
@@ -156,7 +156,69 @@
 									min="1"
 									max="45"
 									step="0.1"
-									bind:value={params.chamferAngle}
+									bind:value={params.gearChamferAngle}
+									onchange={() => updateParams(params)}
+									class="numeric-input"
+								/>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Chamfer Section -->
+					<div class="parameter-group">
+						<label class="checkbox-label">
+							<span>Chamfer Gear</span>
+							<input
+								type="checkbox"
+								bind:checked={params.gearChamfer}
+								onchange={() => updateParams(params)}
+								class="checkbox-input"
+							/>
+						</label>
+					</div>
+
+					{#if params.gearChamfer}
+						<div class="conditional-params" transition:slide={{ duration: 300 }}>
+							<div class="parameter-group">
+								<label for="chamferAngle" class="param-label">Chamfer Angle</label>
+								<input
+									id="chamferAngle"
+									type="number"
+									min="1"
+									max="45"
+									step="0.1"
+									bind:value={params.gearChamferAngle}
+									onchange={() => updateParams(params)}
+									class="numeric-input"
+								/>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Inner Chamfer Section -->
+					<div class="parameter-group">
+						<label class="checkbox-label">
+							<span>Chamfer Inner Bore</span>
+							<input
+								type="checkbox"
+								bind:checked={params.innerChamfer}
+								onchange={() => updateParams(params)}
+								class="checkbox-input"
+							/>
+						</label>
+					</div>
+
+					{#if params.innerChamfer}
+						<div class="conditional-params" transition:slide={{ duration: 300 }}>
+							<div class="parameter-group">
+								<label for="innerChamferSize" class="param-label">Inner Chamfer Size</label>
+								<input
+									id="innerChamferSize"
+									type="number"
+									min="0.1"
+									max="5"
+									step="0.1"
+									bind:value={params.innerChamferSize}
 									onchange={() => updateParams(params)}
 									class="numeric-input"
 								/>
