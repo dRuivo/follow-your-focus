@@ -44,7 +44,12 @@
 			<a class="nav__pill" href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
 				>☕ Tip</a
 			>
-			<button class="hamburger" type="button" onclick={() => (mobileMenuOpen = !mobileMenuOpen)}>
+			<button
+				class="hamburger"
+				type="button"
+				aria-label="Toggle menu"
+				onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
+			>
 				<svg
 					class="hamburger-icon"
 					viewBox="0 0 24 24"
@@ -252,8 +257,7 @@
 		outline-offset: -2px;
 	}
 
-	.nav__btn,
-	.footer__btn {
+	.nav__btn {
 		appearance: none;
 		border: none;
 		background: transparent;
@@ -266,19 +270,16 @@
 		transition: all 0.15s ease;
 	}
 
-	.nav__btn:hover,
-	.footer__btn:hover {
+	.nav__btn:hover {
 		background-color: var(--app-panel-bg);
 	}
 
-	.nav__btn:focus-visible,
-	.footer__btn:focus-visible {
+	.nav__btn:focus-visible {
 		outline: 2px solid var(--color-primary-500);
 		outline-offset: 2px;
 	}
 
-	.nav__link,
-	.footer__link {
+	.nav__link {
 		text-decoration: none;
 		color: var(--app-text);
 		padding: var(--space-1) var(--space-2);
@@ -287,13 +288,11 @@
 		transition: all 0.15s ease;
 	}
 
-	.nav__link:hover,
-	.footer__link:hover {
+	.nav__link:hover {
 		background-color: var(--app-panel-bg);
 	}
 
-	.nav__link:focus-visible,
-	.footer__link:focus-visible {
+	.nav__link:focus-visible {
 		outline: 2px solid var(--color-primary-500);
 		outline-offset: 2px;
 	}
@@ -348,10 +347,6 @@
 		gap: var(--space-1);
 		flex-wrap: wrap;
 		justify-content: flex-end;
-	}
-
-	.dot {
-		color: var(--app-border);
 	}
 
 	.footer__meta {
