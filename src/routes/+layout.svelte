@@ -101,21 +101,9 @@
 		<div class="footer__row">
 			<div class="footer__left">Built for the commons.</div>
 			<div class="footer__right footer__nav">
-				<button class="footer__btn" type="button" onclick={() => (introModalOpen = true)}>
-					About
-				</button>
-				<span class="dot">·</span>
-				<a class="footer__link" href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
-					>Source</a
-				>
-				<span class="dot">·</span>
-				<button class="footer__btn" type="button" onclick={() => (feedbackOpen = true)}
-					>Feedback</button
-				>
+				<div class="footer__meta">Code: CC BY-NC 4.0 · Outputs: CC BY 4.0 · v0.1.0</div>
 			</div>
 		</div>
-
-		<div class="footer__meta">Code: CC BY-NC 4.0 · Outputs: CC BY 4.0 · v0.1.0</div>
 	</footer>
 </div>
 
