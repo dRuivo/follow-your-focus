@@ -92,101 +92,103 @@
 	aria-labelledby="feedback-modal-title"
 	aria-describedby="feedback-modal-content"
 >
-	<div class="modal-content">
-		<div class="modal-header">
-			<h1 id="feedback-modal-title">Leave a note for the maker</h1>
-			<p class="modal-subtitle">
-				My name is Diogo, and I'm the creator of Follow Your Focus.<br />
-				I'd love to hear your thoughts! <br />
-				Tell me what's working, what's confusing, or what you wish was different.
-			</p>
-		</div>
+	<div class="modal-overlay">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 id="feedback-modal-title">Leave a note for the maker</h1>
+				<p class="modal-subtitle">
+					My name is Diogo, and I'm the creator of Follow Your Focus.<br />
+					I'd love to hear your thoughts! <br />
+					Tell me what's working, what's confusing, or what you wish was different.
+				</p>
+			</div>
 
-		<div id="feedback-modal-content" class="modal-body">
-			{#if submitSuccess}
-				<div class="alert alert-success">
-					<p>✓ Thank you! Your note has been sent successfully.</p>
-					{#if !formData.email}
-						<p class="alert-meta">You submitted anonymously.</p>
-					{:else}
-						<p class="alert-meta">A confirmation email has been sent to {formData.email}</p>
-					{/if}
-				</div>
-			{:else}
-				<form onsubmit={handleSubmit}>
-					<div class="form-group">
-						<label for="name">Name <span class="text-muted">(optional)</span></label>
-						<input
-							type="text"
-							id="name"
-							bind:value={formData.name}
-							placeholder="Your name"
-							disabled={isSubmitting}
-						/>
+			<div id="feedback-modal-content" class="modal-body">
+				{#if submitSuccess}
+					<div class="alert alert-success">
+						<p>✓ Thank you! Your note has been sent successfully.</p>
+						{#if !formData.email}
+							<p class="alert-meta">You submitted anonymously.</p>
+						{:else}
+							<p class="alert-meta">A confirmation email has been sent to {formData.email}</p>
+						{/if}
 					</div>
-
-					<div class="form-group">
-						<label for="email"
-							>Email <span class="text-muted">(optional, if you want a reply)</span></label
-						>
-						<input
-							type="email"
-							id="email"
-							bind:value={formData.email}
-							placeholder="your@email.com"
-							disabled={isSubmitting}
-						/>
-					</div>
-
-					<div class="guidance-section">
-						<h3>Some questions you may want to answer:</h3>
-						<ol>
-							<li>What were you hoping to do?</li>
-							<li>What surprised or frustrated you?</li>
-							<li>Anything else you'd like me to know?</li>
-						</ol>
-					</div>
-
-					<div class="form-group">
-						<label for="message">Note</label>
-						<textarea
-							id="message"
-							bind:value={formData.message}
-							placeholder="Your note..."
-							required
-							disabled={isSubmitting}
-							rows="5"
-						></textarea>
-					</div>
-
-					{#if submitError}
-						<div class="alert alert-error">
-							<p>✗ {submitError}</p>
+				{:else}
+					<form onsubmit={handleSubmit}>
+						<div class="form-group">
+							<label for="name">Name <span class="text-muted">(optional)</span></label>
+							<input
+								type="text"
+								id="name"
+								bind:value={formData.name}
+								placeholder="Your name"
+								disabled={isSubmitting}
+							/>
 						</div>
-					{/if}
 
-					<div class="footer-content">
-						<p>
-							I read everything and genuinely appreciate your thoughts. I can't reply to everything
-							or implement every idea, but your feedback shapes what I build next.
-						</p>
-					</div>
+						<div class="form-group">
+							<label for="email"
+								>Email <span class="text-muted">(optional, if you want a reply)</span></label
+							>
+							<input
+								type="email"
+								id="email"
+								bind:value={formData.email}
+								placeholder="your@email.com"
+								disabled={isSubmitting}
+							/>
+						</div>
 
-					<div class="modal-actions">
-						<button type="submit" class="btn btn-primary" disabled={isSubmitting}>
-							{isSubmitting ? 'Sending...' : 'Send Note'}
-						</button>
-						<button
-							type="button"
-							class="btn btn-secondary"
-							onclick={() => closeModal()}
-							disabled={isSubmitting}
-						>
-							Cancel
-						</button>
-					</div>
-				</form>
-			{/if}
+						<div class="guidance-section">
+							<h3>Some questions you may want to answer:</h3>
+							<ol>
+								<li>What were you hoping to do?</li>
+								<li>What surprised or frustrated you?</li>
+								<li>Anything else you'd like me to know?</li>
+							</ol>
+						</div>
+
+						<div class="form-group">
+							<label for="message">Note</label>
+							<textarea
+								id="message"
+								bind:value={formData.message}
+								placeholder="Your note..."
+								required
+								disabled={isSubmitting}
+								rows="5"
+							></textarea>
+						</div>
+
+						{#if submitError}
+							<div class="alert alert-error">
+								<p>✗ {submitError}</p>
+							</div>
+						{/if}
+
+						<div class="footer-content">
+							<p>
+								I read everything and genuinely appreciate your thoughts. I can't reply to
+								everything or implement every idea, but your feedback shapes what I build next.
+							</p>
+						</div>
+
+						<div class="modal-actions">
+							<button type="submit" class="btn btn-primary" disabled={isSubmitting}>
+								{isSubmitting ? 'Sending...' : 'Send Note'}
+							</button>
+							<button
+								type="button"
+								class="btn btn-secondary"
+								onclick={() => closeModal()}
+								disabled={isSubmitting}
+							>
+								Cancel
+							</button>
+						</div>
+					</form>
+				{/if}
+			</div>
 		</div>
 	</div>
 </dialog>
