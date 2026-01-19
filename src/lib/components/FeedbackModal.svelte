@@ -1,14 +1,55 @@
 <script lang="ts">
-	import { tick } from 'svelte';
-	import { EXTERNAL_URLS } from '$lib/config';
-
 	let { isOpen = $bindable(false), onClose = () => {} } = $props();
 
 	let dialogElement: HTMLDialogElement | undefined;
+	let isSubmitting = $state(false);
+	let submitError = $state('');
+	let submitSuccess = $state(false);
+
+	let formData = $state({
+		name: '',
+		email: '',
+		message: ''
+	});
 
 	function closeModal() {
 		isOpen = false;
+		resetForm();
 		onClose();
+	}
+
+	function resetForm() {
+		formData = { name: '', email: '', message: '' };
+		submitError = '';
+		submitSuccess = false;
+	}
+
+	async function handleSubmit(e: Event) {
+		e.preventDefault();
+		isSubmitting = true;
+		submitError = '';
+		submitSuccess = false;
+
+		try {
+			const response = await fetch('/api/feedback', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(formData)
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				throw new Error(result.error || 'Failed to submit feedback');
+			}
+
+			submitSuccess = true;
+			// setTimeout(() => closeModal(), 5000);
+		} catch (error) {
+			submitError = error instanceof Error ? error.message : 'An error occurred';
+		} finally {
+			isSubmitting = false;
+		}
 	}
 
 	function handleBackdropClick(e: MouseEvent) {
@@ -17,59 +58,30 @@
 		}
 	}
 
-	// Watch for isOpen changes
 	$effect(() => {
-		console.log(
-			'FeedbackModal effect triggered, isOpen:',
-			isOpen,
-			'dialogElement:',
-			!!dialogElement
-		);
 		if (!dialogElement) return;
-
 		if (isOpen) {
-			try {
-				console.log('Attempting to open FeedbackModal');
-				// Force display first
-				dialogElement.style.display = 'block';
-
-				if (typeof dialogElement.showModal === 'function') {
-					dialogElement.showModal();
-					console.log('showModal() called successfully');
-				} else {
-					dialogElement.setAttribute('open', '');
-					console.log('set open attribute');
-				}
-
-				// Focus the primary button after a short delay
-				setTimeout(() => {
-					const primaryBtn = dialogElement?.querySelector(
-						'.modal-footer .btn-primary'
-					) as HTMLButtonElement;
-					primaryBtn?.focus();
-				}, 100);
-			} catch (error) {
-				console.error('Error opening FeedbackModal:', error);
+			dialogElement.style.display = 'block';
+			if (typeof dialogElement.showModal === 'function') {
+				dialogElement.showModal();
+			} else {
+				dialogElement.setAttribute('open', '');
 			}
+			setTimeout(() => {
+				const primaryBtn = dialogElement?.querySelector(
+					'.modal-footer .btn-primary'
+				) as HTMLButtonElement;
+				primaryBtn?.focus();
+			}, 100);
 		} else {
-			try {
-				console.log('Attempting to close FeedbackModal');
-				if (typeof dialogElement.close === 'function') {
-					dialogElement.close();
-				} else {
-					dialogElement.removeAttribute('open');
-				}
-				// Reset display
-				dialogElement.style.display = '';
-			} catch (error) {
-				console.error('Error closing FeedbackModal:', error);
+			if (typeof dialogElement.close === 'function') {
+				dialogElement.close();
+			} else {
+				dialogElement.removeAttribute('open');
 			}
+			dialogElement.style.display = '';
 		}
 	});
-
-	function openGitHub() {
-		window.open(EXTERNAL_URLS.GITHUB_REPO, '_blank');
-	}
 </script>
 
 <dialog
@@ -80,46 +92,101 @@
 	aria-labelledby="feedback-modal-title"
 	aria-describedby="feedback-modal-content"
 >
-	<div class="modal-overlay">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h1 id="feedback-modal-title">Feedback</h1>
-			</div>
+	<div class="modal-content">
+		<div class="modal-header">
+			<h1 id="feedback-modal-title">Leave a note for the maker</h1>
+			<p class="modal-subtitle">
+				My name is Diogo, and I'm the creator of Follow Your Focus.<br />
+				I'd love to hear your thoughts! <br />
+				Tell me what's working, what's confusing, or what you wish was different.
+			</p>
+		</div>
 
-			<div id="feedback-modal-content" class="modal-body">
-				<section class="modal-section">
-					<h2>Work in Progress</h2>
-					<p>
-						A dedicated feedback form is coming soon. For now, we'd appreciate your input through
-						GitHub issues.
-					</p>
-				</section>
+		<div id="feedback-modal-content" class="modal-body">
+			{#if submitSuccess}
+				<div class="alert alert-success">
+					<p>✓ Thank you! Your note has been sent successfully.</p>
+					{#if !formData.email}
+						<p class="alert-meta">You submitted anonymously.</p>
+					{:else}
+						<p class="alert-meta">A confirmation email has been sent to {formData.email}</p>
+					{/if}
+				</div>
+			{:else}
+				<form onsubmit={handleSubmit}>
+					<div class="form-group">
+						<label for="name">Name <span class="text-muted">(optional)</span></label>
+						<input
+							type="text"
+							id="name"
+							bind:value={formData.name}
+							placeholder="Your name"
+							disabled={isSubmitting}
+						/>
+					</div>
 
-				<section class="modal-section">
-					<h2>How to Share Feedback</h2>
-					<p>
-						Head over to the <a href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
-							>GitHub repository</a
-						> and open an issue with your feedback, bug reports, or feature requests.
-					</p>
-				</section>
+					<div class="form-group">
+						<label for="email"
+							>Email <span class="text-muted">(optional, if you want a reply)</span></label
+						>
+						<input
+							type="email"
+							id="email"
+							bind:value={formData.email}
+							placeholder="your@email.com"
+							disabled={isSubmitting}
+						/>
+					</div>
 
-				<section class="modal-section">
-					<h2>What We're Looking For</h2>
-					<ul class="modal-list">
-						<li>Bug reports and issues</li>
-						<li>Feature suggestions</li>
-						<li>Design improvements</li>
-						<li>Documentation improvements</li>
-						<li>General feedback</li>
-					</ul>
-				</section>
-			</div>
+					<div class="guidance-section">
+						<h3>Some questions you may want to answer:</h3>
+						<ol>
+							<li>What were you hoping to do?</li>
+							<li>What surprised or frustrated you?</li>
+							<li>Anything else you'd like me to know?</li>
+						</ol>
+					</div>
 
-			<div class="modal-footer">
-				<button class="btn btn-secondary" onclick={() => closeModal()}>Close</button>
-				<button class="btn btn-primary" onclick={openGitHub}>Open GitHub Issues</button>
-			</div>
+					<div class="form-group">
+						<label for="message">Note</label>
+						<textarea
+							id="message"
+							bind:value={formData.message}
+							placeholder="Your note..."
+							required
+							disabled={isSubmitting}
+							rows="5"
+						></textarea>
+					</div>
+
+					{#if submitError}
+						<div class="alert alert-error">
+							<p>✗ {submitError}</p>
+						</div>
+					{/if}
+
+					<div class="footer-content">
+						<p>
+							I read everything and genuinely appreciate your thoughts. I can't reply to everything
+							or implement every idea, but your feedback shapes what I build next.
+						</p>
+					</div>
+
+					<div class="modal-actions">
+						<button type="submit" class="btn btn-primary" disabled={isSubmitting}>
+							{isSubmitting ? 'Sending...' : 'Send Note'}
+						</button>
+						<button
+							type="button"
+							class="btn btn-secondary"
+							onclick={() => closeModal()}
+							disabled={isSubmitting}
+						>
+							Cancel
+						</button>
+					</div>
+				</form>
+			{/if}
 		</div>
 	</div>
 </dialog>
@@ -131,28 +198,27 @@
 		padding: 0;
 		max-width: 600px;
 		width: 90vw;
-		min-height: 70vh;
+		min-height: auto;
 		max-height: 95vh;
-		box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+		box-shadow: var(--shadow-xl);
 		background: var(--app-bg);
 		color: var(--app-text);
 	}
 
-	/* Ensure the dialog is always visible when open */
+	/* Dialog open state */
 	.feedback-modal[open] {
-		display: block !important;
+		display: flex !important;
+		flex-direction: column;
 		position: fixed !important;
 		left: 50% !important;
 		top: 50% !important;
 		transform: translate(-50%, -50%) !important;
 		z-index: 1000 !important;
-		visibility: visible !important;
-		opacity: 1 !important;
 	}
 
-	/* Fallback for browsers that support :modal */
 	.feedback-modal:modal {
-		display: block !important;
+		display: flex !important;
+		flex-direction: column;
 		position: fixed !important;
 		left: 50% !important;
 		top: 50% !important;
@@ -165,17 +231,11 @@
 		backdrop-filter: blur(4px);
 	}
 
-	.modal-overlay {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-		width: 100%;
-	}
-
 	.modal-content {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		width: 100%;
 	}
 
 	.modal-header {
@@ -186,10 +246,17 @@
 	}
 
 	.modal-header h1 {
-		margin: 0;
-		font-size: var(--text-2xl);
+		margin: 0 0 var(--space-2) 0;
+		font-size: var(--text-3xl);
 		font-weight: 700;
 		color: var(--color-primary-600);
+	}
+
+	.modal-subtitle {
+		margin: 0;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
+		color: var(--app-text-muted);
 	}
 
 	.modal-body {
@@ -201,80 +268,156 @@
 		gap: var(--space-6);
 	}
 
-	.modal-section {
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+	}
+
+	.form-group {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-2);
 	}
 
-	.modal-section h2 {
-		margin: 0;
-		font-size: var(--text-lg);
-		font-weight: 600;
-		color: var(--app-text);
-		font-family: var(--font-heading);
-		letter-spacing: -0.025em;
-	}
-
-	.modal-section p {
-		margin: 0;
+	.form-group label {
 		font-size: var(--text-sm);
-		line-height: var(--leading-relaxed);
+		font-weight: 500;
 		color: var(--app-text);
+		letter-spacing: -0.01em;
 	}
 
-	.modal-section a {
-		color: var(--color-primary-600);
-		text-decoration: none;
-		font-weight: 600;
+	.text-muted {
+		color: var(--app-text-muted);
+		font-weight: 400;
+	}
+
+	.form-group input,
+	.form-group textarea {
+		font-family: var(--font-body);
+		font-size: var(--text-sm);
+		color: var(--app-text);
+		background-color: var(--app-bg);
+		border: 1px solid var(--app-border);
+		border-radius: var(--radius-lg);
+		padding: var(--space-3) var(--space-4);
 		transition: all 0.2s ease;
-		border-bottom: 2px solid transparent;
-		padding-bottom: 2px;
+		outline: none;
+		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 	}
 
-	.modal-section a:hover {
-		color: var(--color-primary-700);
-		border-bottom-color: var(--color-primary-600);
+	.form-group input:hover:not(:focus),
+	.form-group textarea:hover:not(:focus) {
+		border-color: var(--color-neutral-300);
 	}
 
-	.modal-section a:focus-visible {
-		outline: 2px solid var(--color-primary-600);
-		outline-offset: 2px;
+	.form-group input:focus,
+	.form-group textarea:focus {
+		border-color: var(--color-primary-500);
+		box-shadow: 0 0 0 3px rgb(45 140 75 / 0.1);
 	}
 
-	.modal-list {
-		margin: var(--space-2) 0 0 var(--space-4);
-		padding: 0;
-		list-style: disc;
+	.form-group input:disabled,
+	.form-group textarea:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.guidance-section {
+		background: var(--app-panel-bg);
+		border: 1px solid var(--app-border);
+		border-radius: var(--radius-lg);
+		padding: var(--space-4);
+	}
+
+	.guidance-section h3 {
+		margin: 0 0 var(--space-3) 0;
+		font-size: var(--text-base);
+		font-weight: 600;
 		color: var(--app-text);
 	}
 
-	.modal-list li {
+	.guidance-section ol {
+		margin: 0;
+		padding-left: var(--space-6);
+		color: var(--app-text);
+	}
+
+	.guidance-section li {
 		font-size: var(--text-sm);
 		line-height: var(--leading-relaxed);
 		color: var(--app-text);
-		margin-bottom: var(--space-1);
+		margin-bottom: var(--space-2);
 	}
 
-	.modal-footer {
+	.guidance-section li:last-child {
+		margin-bottom: 0;
+	}
+
+	.alert {
+		padding: var(--space-4);
+		border-radius: var(--radius-lg);
+		border: 1px solid;
+	}
+
+	.alert p {
+		margin: 0;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
+	}
+
+	.alert-meta {
+		margin-top: var(--space-2) !important;
+		font-size: var(--text-xs) !important;
+		opacity: 0.9;
+	}
+
+	.alert-success {
+		background-color: var(--color-success-50);
+		color: var(--color-success-700);
+		border-color: var(--color-success-200);
+	}
+
+	.alert-error {
+		background-color: var(--color-error-50);
+		color: var(--color-error-700);
+		border-color: var(--color-error-200);
+	}
+
+	.footer-content {
+		background: var(--app-panel-bg);
+		border-radius: var(--radius-lg);
+		padding: var(--space-4);
+	}
+
+	.footer-content p {
+		margin: 0 0 var(--space-2) 0;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
+		color: var(--app-text);
+	}
+
+	.footer-content p:last-child {
+		margin-bottom: 0;
+	}
+
+	.modal-actions {
 		display: flex;
 		gap: var(--space-3);
-		padding: var(--space-6);
+		padding-top: var(--space-4);
 		border-top: 1px solid var(--app-border);
-		background-color: var(--app-header-bg);
-		flex-shrink: 0;
-		justify-content: flex-end;
 	}
 
-	.modal-footer .btn {
-		min-width: 150px;
+	.modal-actions .btn {
+		flex: 1;
+		min-height: var(--button-height-md);
 		justify-content: center;
 	}
 
 	@media (max-width: 640px) {
 		.feedback-modal {
 			width: 95vw;
-			max-height: 85vh;
+			max-height: 90vh;
 		}
 
 		.modal-header {
@@ -282,7 +425,7 @@
 		}
 
 		.modal-header h1 {
-			font-size: var(--text-xl);
+			font-size: var(--text-2xl);
 		}
 
 		.modal-body {
@@ -290,13 +433,9 @@
 			gap: var(--space-4);
 		}
 
-		.modal-footer {
+		.modal-actions {
 			flex-direction: column;
-			padding: var(--space-4);
-		}
-
-		.modal-footer .btn {
-			width: 100%;
+			padding-top: var(--space-4);
 		}
 	}
 </style>

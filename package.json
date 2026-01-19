@@ -46,6 +46,7 @@
 	"dependencies": {
 		"@jscad/io": "^2.4.12",
 		"@jscad/modeling": "^2.12.6",
+		"resend": "^6.7.0",
 		"three": "^0.182.0"
 	}
 }

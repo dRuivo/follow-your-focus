@@ -30,7 +30,9 @@
 		<!-- Desktop Navigation -->
 		<nav class="nav nav-desktop">
 			<button class="nav-btn" type="button" onclick={() => (introModalOpen = true)}>About</button>
-			<button class="nav-btn" type="button" onclick={() => (feedbackOpen = true)}>Feedback</button>
+			<button class="nav-btn" type="button" onclick={() => (feedbackOpen = true)}
+				>Leave a Note</button
+			>
 			<a class="nav-link" href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
 				>Source</a
 			>
@@ -85,7 +87,7 @@
 						mobileMenuOpen = false;
 					}}
 				>
-					Feedback
+					Leave a Note
 				</button>
 				<a
 					class="mobile-menu-item"

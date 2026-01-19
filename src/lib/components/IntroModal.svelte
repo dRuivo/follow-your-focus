@@ -220,7 +220,7 @@
 
 	.modal-header h1 {
 		margin: 0 0 var(--space-1) 0;
-		font-size: var(--text-2xl);
+		font-size: var(--text-3xl);
 		font-weight: 700;
 		color: var(--color-primary-600);
 	}
