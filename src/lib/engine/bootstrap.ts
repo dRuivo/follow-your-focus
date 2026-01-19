@@ -3,20 +3,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import jscadIo from '@jscad/io';
 import type { FocusRingParams } from '$lib/focusRing/types';
-import { makeFocusRing } from '$lib/focusRing/makeFocusRing';
+import { FocusRingWorkerManager } from '$lib/worker/workerManager';
 
-// If you use @jscad/io's stlSerializer:
 const { stlSerializer } = jscadIo;
 
 export type Engine = {
-	update: (p: FocusRingParams) => void;
+	update: (p: FocusRingParams) => Promise<void>;
 	exportStl: (filename?: string) => void;
 	getNumTeeth: () => number;
 	destroy: () => void;
 };
 
 export function createEngine(canvas: HTMLCanvasElement): Engine {
-	// --- three basics
 	const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 	renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
@@ -37,10 +35,17 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 
 	const material = new THREE.MeshStandardMaterial({ metalness: 0.1, roughness: 0.6 });
 
+	// Loading indicator overlay
+	const loadingOverlay = createLoadingOverlay(canvas);
+
 	let mesh: THREE.Mesh | null = null;
 	let currentGeom: unknown = null;
 	let numTeeth = 0;
 	let raf = 0;
+
+	// Initialize worker manager
+	const workerManager = new FocusRingWorkerManager();
+	let isGenerating = false;
 
 	function resizeToDisplaySize() {
 		const w = canvas.clientWidth;
@@ -53,9 +58,6 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 		}
 	}
 
-	// --- JSCAD geom3 -> THREE.BufferGeometry
-	// Note: this assumes polygon faces are convex. It often works for many solids,
-	// but if you see artifacts, we’ll swap in a robust triangulator next.
 	function jscadToBufferGeometry(geom: any): THREE.BufferGeometry {
 		const geometry = new THREE.BufferGeometry();
 		const vertices: number[] = [];
@@ -63,7 +65,7 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 		let vertexCount = 0;
 
 		for (const poly of geom.polygons) {
-			const verts = poly.vertices; // usually [[x,y,z],...]
+			const verts = poly.vertices;
 			for (let i = 1; i < verts.length - 1; i++) {
 				indices.push(vertexCount, vertexCount + i, vertexCount + i + 1);
 			}
@@ -90,12 +92,23 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 		}
 	}
 
-	// --- public API
-	function update(p: FocusRingParams) {
-		const result = makeFocusRing(p);
-		currentGeom = result.geometry;
-		numTeeth = result.numTeeth;
-		setMesh(currentGeom);
+	// Updated to async, uses worker
+	async function update(p: FocusRingParams) {
+		if (isGenerating) return; // Prevent concurrent requests
+
+		isGenerating = true;
+		loadingOverlay.show();
+		try {
+			const result = await workerManager.generate(p);
+			currentGeom = result.geometry;
+			numTeeth = result.numTeeth;
+			setMesh(currentGeom);
+		} catch (error) {
+			console.error('Failed to generate focus ring:', error);
+		} finally {
+			isGenerating = false;
+			loadingOverlay.hide();
+		}
 	}
 
 	function getNumTeeth() {
@@ -136,10 +149,90 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 		}
 		material.dispose();
 		renderer.dispose();
+		workerManager.terminate();
+		loadingOverlay.destroy();
 	}
 
-	// Start immediately on creation
 	start();
 
 	return { update, exportStl, getNumTeeth, destroy };
+}
+
+// Helper function to create loading overlay
+function createLoadingOverlay(canvas: HTMLCanvasElement) {
+	const overlay = document.createElement('div');
+	overlay.style.cssText = `
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: none;
+		align-items: center;
+		justify-content: center;
+		background-color: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(2px);
+		z-index: 100;
+		border-radius: var(--radius-lg);
+	`;
+
+	const text = document.createElement('div');
+	text.style.cssText = `
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--color-primary-500);
+		font-family: var(--font-heading);
+		letter-spacing: -0.025em;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	`;
+	text.innerHTML = `
+		<span>Generating...</span>
+		<span style="
+			display: inline-block;
+			width: 1.5rem;
+			height: 1.5rem;
+			border: 3px solid var(--color-primary-200);
+			border-top-color: var(--color-primary-500);
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+		"></span>
+	`;
+
+	// Add animation keyframes
+	if (!document.getElementById('spinner-animation')) {
+		const style = document.createElement('style');
+		style.id = 'spinner-animation';
+		style.textContent = `
+			@keyframes spin {
+				to { transform: rotate(360deg); }
+			}
+		`;
+		document.head.appendChild(style);
+	}
+
+	overlay.appendChild(text);
+
+	// Position overlay relative to canvas
+	const canvasParent = canvas.parentElement;
+	if (canvasParent) {
+		// Ensure parent is positioned
+		if (getComputedStyle(canvasParent).position === 'static') {
+			canvasParent.style.position = 'relative';
+		}
+		canvasParent.appendChild(overlay);
+	}
+
+	return {
+		show: () => {
+			overlay.style.display = 'flex';
+		},
+		hide: () => {
+			overlay.style.display = 'none';
+		},
+		destroy: () => {
+			overlay.remove();
+		}
+	};
 }

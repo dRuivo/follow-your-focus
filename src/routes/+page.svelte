@@ -121,10 +121,10 @@
 					</div>
 
 					<div class="parameter-group">
-						<label for="numberOfTeeth" class="param-label">
-							Number of Teeth
+						<p class="param-label">
+							Number of Teeth:
 							<span>{numTeeth}</span>
-						</label>
+						</p>
 					</div>
 
 					<!-- Chamfer Section -->

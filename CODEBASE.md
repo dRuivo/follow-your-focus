@@ -661,14 +661,12 @@ pnpm run build    # Production build
 2. **Undo/Redo**: State history with parameter snapshots
 3. **Presets**: Save/load common configurations (localStorage or cloud)
 4. **STL Mesh Optimization**: Reduce polygon count for faster exports
-5. **Export Formats**: STEP, OBJ, Fusion360 native format, GLTF
-6. **Real-time Preview**: Live STL mesh preview before export
-7. **Collaborative**: Real-time parameter sharing (WebSockets)
-8. **Advanced UI**: Gear tooth animation, cross-section view, 2D tooth profile display
-9. **Localization**: Multi-language support
-10. **Parameter Constraints**: Smart validation with UI feedback
-11. **Gear Simulation**: Mesh two gears and simulate rotation
-12. **Custom Bore Profiles**: Non-circular inner bores
+5. **Export Formats**: STEP, OBJ, 3mf
+6. **Localization**: Multi-language support
+7. **Parameter Constraints**: Smart validation with UI feedback
+8. **Gear Simulation**: Mesh two gears and simulate rotation
+9. **Custom Bore Profiles**: Non-circular inner bores
+10. **Custome Test on Part**: Text on the gear's inside wall
 
 ---
 
