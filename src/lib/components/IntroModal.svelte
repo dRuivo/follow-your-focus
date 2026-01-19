@@ -19,21 +19,17 @@
 
 	// Watch for isOpen changes
 	$effect(() => {
-		console.log('IntroModal effect triggered, isOpen:', isOpen, 'dialogElement:', !!dialogElement);
 		if (!dialogElement) return;
 
 		if (isOpen) {
 			try {
-				console.log('Attempting to open IntroModal');
 				// Force display first
 				dialogElement.style.display = 'block';
 
 				if (typeof dialogElement.showModal === 'function') {
 					dialogElement.showModal();
-					console.log('showModal() called successfully');
 				} else {
 					dialogElement.setAttribute('open', '');
-					console.log('set open attribute');
 				}
 
 				// Focus the primary button after a short delay
@@ -41,7 +37,7 @@
 					const primaryBtn = dialogElement?.querySelector(
 						'.modal-footer .btn-primary'
 					) as HTMLButtonElement;
-					primaryBtn?.focus();
+					primaryBtn?.focus({ preventScroll: true });
 				}, 100);
 			} catch (error) {
 				console.error('Error opening IntroModal:', error);
