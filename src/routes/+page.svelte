@@ -23,7 +23,7 @@
 		canvas = document.getElementById('c') as HTMLCanvasElement;
 		const mod = await import('$lib/engine/bootstrap');
 		viewer = mod.createEngine(canvas);
-		viewer.update(params);
+		await viewer.update(params);
 		numTeeth = viewer.getNumTeeth();
 	});
 
@@ -34,9 +34,9 @@
 		updateParams(params);
 	}
 
-	function updateParams(p: FocusRingParams) {
+	async function updateParams(p: FocusRingParams) {
 		focusRingParams.set(params);
-		viewer?.update(params);
+		await viewer?.update(params);
 		numTeeth = viewer?.getNumTeeth() ?? 0;
 	}
 
