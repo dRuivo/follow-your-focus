@@ -68,10 +68,6 @@
 		window.addEventListener('keydown', handleKeydown);
 		return () => window.removeEventListener('keydown', handleKeydown);
 	});
-
-	function openGitHub() {
-		window.open(EXTERNAL_URLS.GITHUB_REPO, '_blank');
-	}
 </script>
 
 <dialog
@@ -85,67 +81,52 @@
 	<div class="modal-overlay">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h1 id="intro-modal-title">Follow Your Focus</h1>
-				<h2>Community tools</h2>
+				<h1 id="intro-modal-title">What`s next</h1>
+				<h2>This project is a living work in progress</h2>
+				<h3>Here are some things I may work on next:</h3>
 			</div>
 
 			<div id="intro-modal-content" class="modal-body">
 				<section class="modal-section">
-					<h2>Welcome to the Commons</h2>
-					<p>
-						This tool exists to make filmmaking equipment more accessible, repairable, and
-						shareable.
-					</p>
-					<p>
-						Generate custom follow focus rings locally—adapted to your lenses—without subscriptions,
-						accounts, or lock-in.
-					</p>
-				</section>
-
-				<section class="modal-section">
-					<h2>Why this exists</h2>
-					<p>Technical tools should serve people, not extract value from them</p>
-					<p>
-						Professional gear is often overpriced, proprietary, or designed to be replaced rather
-						than repaired.
-					</p>
-					<p>This tool is an alternative:</p>
+					<h2>User Experience</h2>
 					<ul class="modal-list">
-						<li>fabricate locally</li>
-						<li>adapt instead of discard</li>
-						<li>share knowledge instead of extracting value</li>
+						<li>Simpler parameter selection</li>
+						<li>Preset saving and loading</li>
+						<li>Tooltip for parameters</li>
+						<li>Healthy limits on parameters</li>
 					</ul>
 				</section>
 
 				<section class="modal-section">
-					<h2>Values note</h2>
-					<p>
-						We ask that this tool be used in ways that support learning, creativity, and community.
-						It is not intended for surveillance, coercion, or extractive practices.
-					</p>
+					<h2>Focus Ring Model</h2>
+					<ul class="modal-list">
+						<li>Text on inside</li>
+						<li>Performance enhancements</li>
+					</ul>
 				</section>
 
 				<section class="modal-section">
-					<h2>Sharing & attribution</h2>
-					<p>You're free to use the generated STL files commercially.</p>
-					<p>
-						If you share or sell prints, please credit where the tool came from (a link is enough).
-					</p>
+					<h2>How-to and Guides</h2>
+					<ul class="modal-list">
+						<li>How to measure the lens</li>
+						<li>Printing guide</li>
+					</ul>
 				</section>
 
 				<section class="modal-section">
-					<h2>Support</h2>
-					<p>
-						This project is free forever. If it helps you, consider sharing it or leaving a tip:
-					</p>
-					<a href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
-						>☕ Buy Me a Coffee</a
-					>
+					<h2>Hardware</h2>
+					<p>Open Follow Focus system</p>
 				</section>
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-secondary" onclick={openGitHub}>View on GitHub</button>
+				<div>
+					<p>If you'd like to help, send me a Note.</p>
+					<p>Another way would be by sharing it or leaving a tip:</p>
+					<a href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer"
+						>☕ Buy Me a Coffee</a
+					>
+				</div>
 				<button class="btn btn-primary" onclick={() => closeModal()}>Enter the tool</button>
 			</div>
 		</div>
@@ -229,6 +210,15 @@
 		letter-spacing: 0;
 	}
 
+	.modal-header h3 {
+		margin: 0;
+		font-size: var(--text-sm);
+		font-weight: 500;
+		color: var(--app-text-muted);
+		font-family: var(--font-body);
+		letter-spacing: 0;
+	}
+
 	.modal-body {
 		flex: 1;
 		overflow-y: auto;
@@ -260,10 +250,6 @@
 		color: var(--app-text);
 	}
 
-	.modal-section p + p {
-		margin-top: var(--space-3);
-	}
-
 	.modal-list {
 		margin: var(--space-2) 0 0 var(--space-4);
 		padding: 0;
@@ -280,36 +266,24 @@
 
 	.modal-footer {
 		display: flex;
-		gap: var(--space-3);
+		flex-direction: column;
+		gap: var(--space-2);
 		padding: var(--space-6);
 		border-top: 1px solid var(--app-border);
 		background-color: var(--app-header-bg);
 		flex-shrink: 0;
-		justify-content: flex-end;
+		align-items: flex-start;
+	}
+
+	.modal-footer > div {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+		width: 100%;
 	}
 
 	.modal-footer .btn {
-		min-width: 150px;
-		justify-content: center;
-	}
-
-	.modal-section a {
-		color: var(--color-warning-600);
-		text-decoration: none;
-		font-weight: 600;
-		transition: all 0.2s ease;
-		border-bottom: 2px solid transparent;
-		padding-bottom: 2px;
-	}
-
-	.modal-section a:hover {
-		color: var(--color-warning-700);
-		border-bottom-color: var(--color-warning-600);
-	}
-
-	.modal-section a:focus-visible {
-		outline: 2px solid var(--color-warning-600);
-		outline-offset: 2px;
+		align-self: flex-end;
 	}
 
 	@media (max-width: 640px) {

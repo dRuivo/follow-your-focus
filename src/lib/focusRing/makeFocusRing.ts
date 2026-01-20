@@ -122,7 +122,7 @@ export function makeFocusRing(params: FocusRingParams): {
 	});
 
 	// --- Bore cutout (inner diameter)
-	const eps = 0.4;
+	const eps = 1;
 	const innerSegmentCount = Math.max(
 		MAX_SEGMENTS,
 		segmentsForCircumference(innerRadius + params.printTolerance, 1)
@@ -142,7 +142,7 @@ export function makeFocusRing(params: FocusRingParams): {
 		const screw = cylinder({
 			radius: params.grubScrewDiameter / 2 - 2 * params.printTolerance,
 			height: outerRadius + eps,
-			segments: 24
+			segments: segmentsForCircumference(params.grubScrewDiameter / 2, 0.4)
 		});
 		// Scew hole 1
 		result = subtract(

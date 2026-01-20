@@ -5,9 +5,11 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import IntroModal from '$lib/components/IntroModal.svelte';
 	import FeedbackModal from '$lib/components/FeedbackModal.svelte';
+	import WhatNextModal from '$lib/components/WhatNextModal.svelte';
 
 	let feedbackOpen = $state(false);
 	let introModalOpen = $state(true);
+	let whatNextModalOpen = $state(false);
 	let mobileMenuOpen = $state(false);
 
 	let { children } = $props();
@@ -19,6 +21,7 @@
 
 <IntroModal bind:isOpen={introModalOpen} />
 <FeedbackModal bind:isOpen={feedbackOpen} />
+<WhatNextModal bind:isOpen={whatNextModalOpen} />
 
 <div class="app-wrapper">
 	<header class="app-header">
@@ -32,6 +35,9 @@
 			<button class="nav-btn" type="button" onclick={() => (introModalOpen = true)}>About</button>
 			<button class="nav-btn" type="button" onclick={() => (feedbackOpen = true)}
 				>Leave a Note</button
+			>
+			<button class="nav-btn" type="button" onclick={() => (whatNextModalOpen = true)}
+				>What's Next</button
 			>
 			<a class="nav-link" href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
 				>Source</a
@@ -88,6 +94,15 @@
 					}}
 				>
 					Leave a Note
+				</button>
+				<button
+					class="mobile-menu-item"
+					onclick={() => {
+						whatNextModalOpen = true;
+						mobileMenuOpen = false;
+					}}
+				>
+					What's Next
 				</button>
 				<a
 					class="mobile-menu-item"

@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 	import { get } from 'svelte/store';
 
-	import { focusRingParams, paramsFromUrl, paramsToSearchParams } from '$lib/focusRing/store';
+	import { focusRingParams } from '$lib/focusRing/store';
 	import type { FocusRingParams } from '$lib/focusRing/types';
 	import { defaultParams } from '$lib/focusRing/types';
 
