@@ -6,6 +6,7 @@
 	import { focusRingParams } from '$lib/focusRing/store';
 	import type { FocusRingParams } from '$lib/focusRing/types';
 	import { defaultParams } from '$lib/focusRing/types';
+	import { getParamsFromUrl, updateUrlHash } from '$lib/focusRing/urlParams';
 
 	let canvas: HTMLCanvasElement;
 	let viewer: null | {
@@ -20,14 +21,40 @@
 	let numTeeth = 0;
 
 	onMount(async () => {
+		// Load params from URL if available, otherwise use defaults
+		const urlParams = getParamsFromUrl();
+		if (urlParams) {
+			params = urlParams;
+		}
+
 		canvas = document.getElementById('c') as HTMLCanvasElement;
 		const mod = await import('$lib/engine/bootstrap');
 		viewer = mod.createEngine(canvas);
 		await viewer.update(params);
 		numTeeth = viewer.getNumTeeth();
+
+		// Listen for hash changes (browser back/forward)
+		if (typeof window !== 'undefined') {
+			window.addEventListener('hashchange', handleHashChange);
+		}
 	});
 
-	onDestroy(() => viewer?.destroy());
+	onDestroy(() => {
+		viewer?.destroy();
+		if (typeof window !== 'undefined') {
+			window.removeEventListener('hashchange', handleHashChange);
+		}
+	});
+
+	async function handleHashChange() {
+		const urlParams = getParamsFromUrl();
+		if (urlParams) {
+			params = urlParams;
+			focusRingParams.set(params);
+			await viewer?.update(params);
+			numTeeth = viewer?.getNumTeeth() ?? 0;
+		}
+	}
 
 	function resetParams() {
 		params = { ...defaultParams };
@@ -38,6 +65,7 @@
 		focusRingParams.set(params);
 		await viewer?.update(params);
 		numTeeth = viewer?.getNumTeeth() ?? 0;
+		updateUrlHash(params);
 	}
 
 	// convenience for bindings

@@ -14,6 +14,9 @@ importers:
       '@jscad/modeling':
         specifier: ^2.12.6
         version: 2.12.6
+      lz-string:
+        specifier: ^1.5.0
+        version: 1.5.0
       resend:
         specifier: ^6.7.0
         version: 6.7.0
@@ -1307,6 +1310,10 @@ packages:
   lru-cache@11.2.4:
     resolution: {integrity: sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==}
     engines: {node: 20 || >=22}
+
+  lz-string@1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
+    hasBin: true
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -2955,6 +2962,8 @@ snapshots:
   lodash.merge@4.6.2: {}
 
   lru-cache@11.2.4: {}
+
+  lz-string@1.5.0: {}
 
   magic-string@0.30.21:
     dependencies:
