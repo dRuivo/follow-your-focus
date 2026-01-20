@@ -44,7 +44,6 @@
 			}
 		} else {
 			try {
-				console.log('Attempting to close IntroModal');
 				if (typeof dialogElement.close === 'function') {
 					dialogElement.close();
 				} else {

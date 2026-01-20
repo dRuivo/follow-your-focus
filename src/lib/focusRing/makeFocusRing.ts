@@ -1,14 +1,20 @@
 import jscad from '@jscad/modeling';
-const { primitives, booleans, transforms, extrusions } = jscad;
+const { primitives, booleans, transforms, extrusions, modifiers } = jscad;
 
 import type { FocusRingParams } from './types';
 
 const MAX_SEGMENTS = 64;
 
+function segmentsForCircumference(radius: number, segmentLength: number): number {
+	const circumference = 2 * Math.PI * radius;
+	return Math.ceil(circumference / segmentLength);
+}
+
 export function makeFocusRing(params: FocusRingParams): {
 	geometry: jscad.geometries.geom3.Geom3;
 	numTeeth: number;
 } {
+	const now = new Date();
 	const { cylinder, polygon } = primitives;
 	const { extrudeLinear, extrudeRotate } = extrusions;
 	const { union, subtract } = booleans;
@@ -32,9 +38,6 @@ export function makeFocusRing(params: FocusRingParams): {
 	// rootRadius = pitchRadius - dedendum = (m*z)/2 - dedendum
 	// => z = 2*(rootRadius + dedendum)/m
 	const numTeeth = Math.ceil((2 * (targetRootRadius + dedendum)) / params.gearModulus);
-
-	// avoid tiny tooth counts (booleans get weird, gear becomes nonsense)
-	// numTeeth = Math.max(numTeeth, 6);
 
 	// Radii
 	const pitchRadius = (numTeeth * params.gearModulus) / 2; // since pitchDiameter = m*z
@@ -111,50 +114,46 @@ export function makeFocusRing(params: FocusRingParams): {
 
 	// --- Root disk (more stable than polygon ring)
 	// Use enough segments so it looks round; tie it to teeth count
+	const outerSegmentCount = Math.max(MAX_SEGMENTS, segmentsForCircumference(outerRadius, 1));
 	const rootDisk = cylinder({
 		radius: rootRadius,
 		height: params.thickness,
-		segments: Math.max(MAX_SEGMENTS, numTeeth * 4)
+		segments: outerSegmentCount
 	});
 
 	// --- Bore cutout (inner diameter)
 	const eps = 0.4;
+	const innerSegmentCount = Math.max(
+		MAX_SEGMENTS,
+		segmentsForCircumference(innerRadius + params.printTolerance, 1)
+	);
 	const bore = cylinder({
 		radius: innerRadius + params.printTolerance,
 		height: params.thickness + eps,
-		segments: Math.max(MAX_SEGMENTS, numTeeth * 4)
+		segments: innerSegmentCount
 	});
 
 	// let result = teethUnion;
 	let result = union(rootDisk, teethUnion);
 	result = subtract(result, translate([0, 0, -eps / 2], bore));
 
-	// Center at origin (Z=0 mid-plane)
-	result = translate([0, 0, -params.thickness / 2], result);
-
 	if (params.grubScrew) {
 		// --- Grub screw hole
 		const screw = cylinder({
 			radius: params.grubScrewDiameter / 2 - 2 * params.printTolerance,
 			height: outerRadius + eps,
-			segments: 128
+			segments: 24
 		});
 		// Scew hole 1
 		result = subtract(
 			result,
-			translate(
-				[outerRadius - eps / 2, 0, -params.thickness / 2],
-				rotate([0, Math.PI / 2, 0], screw)
-			)
+			translate([outerRadius - eps / 2, 0, 0], rotate([0, Math.PI / 2, 0], screw))
 		);
 		if (params.grubScrew2) {
 			// Scew hole 2
 			result = subtract(
 				result,
-				translate(
-					[0, outerRadius - eps / 2, -params.thickness / 2],
-					rotate([Math.PI / 2, 0, 0], screw)
-				)
+				translate([0, outerRadius - eps / 2, 0], rotate([Math.PI / 2, 0, 0], screw))
 			);
 		}
 	}
@@ -165,41 +164,39 @@ export function makeFocusRing(params: FocusRingParams): {
 		const t = params.thickness / 2;
 		const chamferPolygon = polygon({
 			points: [
-				[rootRadius - eps * chamferTan, 0],
-				[outerRadius + eps, 0 - (outerRadius - rootRadius + 2 * eps) * chamferTan],
-				[outerRadius + eps, 0]
+				[rootRadius - eps * chamferTan, params.thickness / 2],
+				[
+					outerRadius + eps,
+					params.thickness / 2 - (outerRadius - rootRadius + 2 * eps) * chamferTan
+				],
+				[outerRadius + eps, params.thickness / 2]
 			]
 		});
 		const extrudedChamfer = extrudeRotate(
-			{ segments: Math.max(MAX_SEGMENTS, numTeeth * 4), startAngle: 0, angle: 2 * Math.PI },
+			{ segments: outerSegmentCount, startAngle: 0, angle: 2 * Math.PI },
 			chamferPolygon
 		);
-		result = subtract(
-			result,
-			translate([0, 0, -params.thickness], rotate([Math.PI, 0, 0], extrudedChamfer))
-		);
 		result = subtract(result, extrudedChamfer);
+		result = subtract(result, rotate([Math.PI, 0, 0], extrudedChamfer));
 	}
 
 	// --- Chamfer inner bore
 	if (params.innerChamfer) {
 		const innerChamferPolygon = polygon({
 			points: [
-				[innerRadius - eps, 0],
-				[innerRadius - eps, -eps - params.innerChamferSize],
-				[innerRadius + params.innerChamferSize + eps, 0]
+				[innerRadius - eps, params.thickness / 2],
+				[innerRadius - eps, -eps - params.innerChamferSize + params.thickness / 2],
+				[innerRadius + params.innerChamferSize + eps, params.thickness / 2]
 			]
 		});
 		const extrudedInnerChamfer = extrudeRotate(
-			{ segments: Math.max(MAX_SEGMENTS, numTeeth * 4), startAngle: 0, angle: 2 * Math.PI },
+			{ segments: innerSegmentCount, startAngle: 0, angle: 2 * Math.PI },
 			innerChamferPolygon
 		);
 		result = subtract(result, extrudedInnerChamfer);
-		result = subtract(
-			result,
-			translate([0, 0, -params.thickness], rotate([Math.PI, 0, 0], extrudedInnerChamfer))
-		);
+		result = subtract(result, rotate([Math.PI, 0, 0], extrudedInnerChamfer));
 	}
 
+	console.log(`Focus ring generated in ${new Date().getTime() - now.getTime()} ms`);
 	return { geometry: result, numTeeth };
 }

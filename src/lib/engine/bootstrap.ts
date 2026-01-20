@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import jscadIo from '@jscad/io';
+import { modifiers } from '@jscad/modeling';
 import type { FocusRingParams } from '$lib/focusRing/types';
 import { FocusRingWorkerManager } from '$lib/worker/workerManager';
 
@@ -117,7 +118,10 @@ export function createEngine(canvas: HTMLCanvasElement): Engine {
 
 	function exportStl(filename = 'followFocusRing.stl') {
 		if (!currentGeom) return;
-		const raw = stlSerializer.serialize({ binary: true }, currentGeom as any);
+		const raw = stlSerializer.serialize(
+			{ binary: true },
+			modifiers.retessellate(currentGeom as any)
+		);
 		const blob = new Blob(raw, { type: 'model/stl' });
 
 		const url = URL.createObjectURL(blob);

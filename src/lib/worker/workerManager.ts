@@ -1,9 +1,10 @@
 import type { FocusRingParams } from '$lib/focusRing/types';
+import jscad from '@jscad/modeling';
 
 type WorkerResponse = {
 	type: 'complete' | 'error';
 	id: string;
-	geometry?: any;
+	geometry?: jscad.geometries.geom3.Geom3;
 	numTeeth?: number;
 	error?: string;
 };
@@ -64,7 +65,7 @@ export class FocusRingWorkerManager {
 					this.requestMap.delete(id);
 					reject(new Error('Worker request timeout'));
 				}
-			}, 30000); // 30 second timeout
+			}, 60000); // 60 second timeout
 		});
 	}
 
