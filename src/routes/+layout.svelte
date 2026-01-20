@@ -2,6 +2,8 @@
 	import '../app.css';
 	import { EXTERNAL_URLS } from '$lib/config';
 
+	import { Bars3 } from 'svelte-heros-v2';
+
 	import favicon from '$lib/assets/favicon.svg';
 	import IntroModal from '$lib/components/IntroModal.svelte';
 	import FeedbackModal from '$lib/components/FeedbackModal.svelte';
@@ -58,19 +60,7 @@
 				aria-label="Toggle menu"
 				onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 			>
-				<svg
-					class="hamburger-icon"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.5"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-					/>
-				</svg>
+				<Bars3 class="hamburger-icon" />
 			</button>
 		</nav>
 
@@ -228,13 +218,6 @@
 	.hamburger:focus-visible {
 		outline: 2px solid var(--color-primary-500);
 		outline-offset: 2px;
-	}
-
-	.hamburger-icon {
-		width: 20px;
-		height: 20px;
-		color: var(--app-text);
-		transition: color 0.15s ease;
 	}
 
 	.mobile-menu {

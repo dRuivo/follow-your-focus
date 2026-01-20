@@ -2,6 +2,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { get } from 'svelte/store';
+	import { Share, ArrowDownTray } from 'svelte-heros-v2';
 
 	import { focusRingParams } from '$lib/focusRing/store';
 	import type { FocusRingParams } from '$lib/focusRing/types';
@@ -59,6 +60,36 @@
 	function resetParams() {
 		params = { ...defaultParams };
 		updateParams(params);
+	}
+
+	async function shareDesign() {
+		if (typeof window === 'undefined') return;
+
+		const url = window.location.href;
+
+		// Try to use Web Share API if available
+		if (navigator.share) {
+			try {
+				await navigator.share({
+					title: 'Focus Ring Design',
+					text: 'Check out this focus ring design I created!',
+					url
+				});
+				return;
+			} catch (err) {
+				// User cancelled share or API not available
+				console.log('Share cancelled');
+			}
+		}
+
+		// Fallback: Copy to clipboard
+		try {
+			await navigator.clipboard.writeText(url);
+			alert('Design link copied to clipboard!');
+		} catch (err) {
+			console.error('Failed to copy:', err);
+			alert('Could not copy link. Please try again.');
+		}
 	}
 
 	async function updateParams(p: FocusRingParams) {
@@ -326,8 +357,20 @@
 
 				<!-- Sticky Export Button -->
 				<div class="panel-footer">
-					<button class="btn btn-primary btn-lg" onclick={() => viewer?.exportStl()}>
-						Export STL
+					<button
+						class="btn btn-secondary btn-icon btn-share"
+						onclick={shareDesign}
+						title="Share Design"
+					>
+						<Share class="icon-sm" />
+					</button>
+					<button
+						class="btn btn-primary btn-icon btn-export"
+						onclick={() => viewer?.exportStl()}
+						title="Export STL"
+					>
+						<ArrowDownTray class="icon-sm" />
+						<span>STL</span>
 					</button>
 				</div>
 			</div>
@@ -525,10 +568,32 @@
 		background-color: var(--app-header-bg);
 		flex-shrink: 0;
 		box-shadow: var(--shadow-lg);
+		display: flex;
+		gap: var(--space-3);
+		flex-direction: row;
 	}
 
 	.panel-footer .btn {
-		width: 100%;
+		min-width: 0;
+	}
+
+	.panel-footer .btn-share {
+		flex: 0 0 calc(33.333% - calc(var(--space-3) / 2));
+	}
+
+	.panel-footer .btn-export {
+		flex: 0 0 calc(66.666% - calc(var(--space-3) / 2));
+	}
+
+	.panel-footer .btn-icon {
+		font-size: var(--text-lg);
+		font-weight: 700;
+		padding: var(--space-3) var(--space-2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-2);
+		min-height: 48px;
 	}
 
 	.checkbox-label {
