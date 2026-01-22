@@ -24,9 +24,8 @@
 		<section>
 			<h2>User Experience</h2>
 			<ul>
-				<li>Simpler parameter selection</li>
+				<li>Tutorial</li>
 				<li>Preset saving and loading</li>
-				<li>Tooltip for parameters</li>
 				<li>Healthy limits on parameters</li>
 			</ul>
 		</section>
@@ -35,6 +34,7 @@
 			<h2>Focus Ring Model</h2>
 			<ul>
 				<li>Text on inside</li>
+				<li>Grub screw flap to prevent scratches</li>
 				<li>Performance enhancements</li>
 			</ul>
 		</section>

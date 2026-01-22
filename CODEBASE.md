@@ -127,9 +127,12 @@ src/
 │   ├── assets/
 │   │   └── favicon.svg
 │   ├── components/
-│   │   ├── IntroModal.svelte        # Welcome/onboarding modal
-│   │   ├── FeedbackModal.svelte     # Feedback collection modal (with email integration)
-│   │   └── WhatNextModal.svelte     # Project roadmap & support modal
+│   │   ├── Modal.svelte             # Base modal component with dialog lifecycle & snippets
+│   │   ├── IntroModal.svelte        # Welcome/onboarding modal (uses Modal base)
+│   │   ├── FeedbackModal.svelte     # Feedback collection modal (uses Modal base, email integration)
+│   │   ├── WhatNextModal.svelte     # Project roadmap & support modal (uses Modal base)
+│   │   ├── Tooltip.svelte           # Rich tooltip component with snippet-based content
+│   │   └── SliderInput.svelte       # Range slider with real-time value tracking
 │   ├── focusRing/
 │   │   ├── types.ts                # FocusRingParams type + defaults
 │   │   ├── store.ts                # Svelte store + parameter management
@@ -601,6 +604,42 @@ This ensures:
 
 ### 5. **Modals**
 
+All modals use a **base Modal component pattern** for code reuse and consistency.
+
+#### **Modal.svelte** (Base Component)
+
+Reusable dialog container handling lifecycle, accessibility, and styling:
+
+**Features**:
+
+- Props: `isOpen` (bindable), `onClose`, `header` (snippet), `content` (snippet), `footer` (snippet)
+- Dialog lifecycle: Uses native `<dialog>` element with `showModal()` method
+- Browser compatibility: Feature detection for Safari (fallback to `[open]` attribute)
+- Keyboard: ESC key closes modal
+- Backdrop: Click outside closes modal
+- Focus management: Auto-focuses first button on open
+- Responsive: Max-width 90vw (desktop) / 95vw (mobile), scrollable body
+
+**Architecture**:
+
+Snippet-based composition (Svelte 5 runes) for flexible content injection:
+
+```svelte
+<Modal bind:isOpen {onClose}>
+	{#snippet header()}
+		<h1>Title</h1>
+	{/snippet}
+	{#snippet content()}
+		<!-- Modal body content -->
+	{/snippet}
+	{#snippet footer()}
+		<button>Action</button>
+	{/snippet}
+</Modal>
+```
+
+This pattern replaces slot-based composition, providing clearer intent and better reusability.
+
 #### **IntroModal** (`lib/components/IntroModal.svelte`)
 
 Welcome/onboarding experience:
@@ -613,22 +652,18 @@ Welcome/onboarding experience:
 4. Sharing & attribution guidelines
 5. Support info ("How to contribute")
 
-**Technical features**:
+**Features**:
 
-- Opens on first visit (`isOpen` binding)
-- No localStorage (stateless - always shows on page reload)
-- Accessible: Proper dialog semantics, ESC key support, backdrop click
-- Browser compatibility: Feature detection for `dialog.showModal()`, fallback to `[open]` attribute for Safari
-- Focus management: `preventScroll: true` prevents auto-scroll when opening/closing
+- Opens on first visit (`bind:isOpen` to parent state)
+- Stateless - always shows on page reload
+- Two-button footer: "View on GitHub" + "Enter the tool"
 
 **Styling**:
 
-- Centered with CSS transform
-- Modal header: h1 title + h2 subtitle with subtle styling
-- Modal body: Scrollable content area
-- Modal footer: Sticky action button
-- Links use primary color with hover states
-- Responsive: Adjusts sizing and layout on mobile (<640px)
+- Header: h1 title + h2 subtitle
+- Sections: h2 headings with descriptive text
+- Links use primary color with hover effects
+- Responsive layout stacks on mobile (<640px)
 
 #### **FeedbackModal** (`lib/components/FeedbackModal.svelte`)
 
@@ -636,59 +671,35 @@ Feedback collection with email integration via **Resend**:
 
 **Content**:
 
-- Status message: "Help shape this tool"
-- Multi-line textarea for feedback message
-- Optional email field (for user confirmation)
+- Form fields: name, email, message
 - Consent checkbox confirming feedback can be shared publicly
 - Sends two emails via **Resend API**:
-  - **To admin**: Full feedback with optional user email
-  - **To user**: Confirmation receipt (if email provided)
+  - To admin: Full feedback with user contact info
+  - To user: Confirmation receipt (if email provided)
 
 **Email Service - Resend**:
 
 - **Service**: Resend (https://resend.com) - email for developers
 - **API Key**: Configured via `.env.local` with `RESEND_API_KEY`
 - **Endpoint**: Server-side API route `/api/feedback`
-- **HTML emails**: Styled emails with branding
-- **Email subjects**:
-  - Admin: "New feedback for Follow Your Focus"
-  - User: "We received your feedback!"
+- **Data Flow**:
+  ```
+  User fills form → POST /api/feedback
+       ↓
+  Server validates & calls Resend API
+       ↓
+  Resend delivers emails to admin & user
+       ↓
+  Modal closes with success message
+  ```
 
 **Technical features**:
 
-- Browser compatibility: Safari-compatible with `.modal-overlay` wrapper
-- Accessible: Proper dialog semantics, label associations
 - Form validation: Basic required field checks
 - Error handling: User feedback on send success/failure
-- Server-side email sending: Protects API key (never sent to browser)
-
-**Styling**:
-
-- Modal header: h1 title + h2 subtitle
-- Modal body: Form fields with clear spacing
-- Modal footer: Single column layout with text above and button aligned right
-- CSS animations: Smooth transitions on open/close
-- Responsive: Adjusts layout on mobile
-
-**Data Flow** (with Resend):
-
-```
-User fills feedback form
-        ↓
-Clicks "Send Feedback"
-        ↓
-POST /api/feedback with { message, email?, agreed: true }
-        ↓
-Server receives request, validates input
-        ↓
-Server calls Resend API with email data:
-  - Admin email with full feedback + user contact info
-  - User confirmation email (if email provided)
-        ↓
-Resend delivers emails
-        ↓
-Modal closes with success message
-```
+- Server-side email: API key never exposed to browser
+- Accessible: Proper label associations
+- Single action button: "Send Feedback"
 
 #### **WhatNextModal** (`lib/components/WhatNextModal.svelte`)
 
@@ -696,30 +707,24 @@ Project roadmap and support information:
 
 **Content sections**:
 
-1. **User Experience**: Future UX improvements (preset saving, tooltips, etc.)
-2. **Focus Ring Model**: Technical improvements (text on inside, performance)
-3. **How-to and Guides**: Documentation (measurement guide, printing guide)
-4. **Hardware**: Long-term vision (Open Follow Focus system)
+1. **User Experience**: Future UX improvements
+2. **Focus Ring Model**: Technical improvements
+3. **How-to and Guides**: Documentation plans
+4. **Hardware**: Long-term vision (Open Follow Focus)
+5. **Support**: Contact & contribution information (styled as highlighted panel)
 
-**Call to action**:
+**Features**:
 
-- "If you'd like to help, send me a Note"
-- "Buy Me a Coffee" link for supporter contributions
-- Primary button: "Enter the tool" (closes modal)
-
-**Technical features**:
-
-- Similar structure to IntroModal
-- Scrollable body content for long roadmap
-- Footer with single-column layout
-- All content properly semantic (h1, h2, h3 hierarchy)
+- Five content sections with h2 headings
+- Last section highlighted with background/border styling
+- Single action button: "Enter the tool"
+- Scrollable body for long content
+- Proper semantic HTML hierarchy (h1, h2, h3)
 
 **Styling**:
 
-- Header: h1 (main title), h2 (subtitle), h3 (helper text)
-- Sections: h2 headings with bullet lists
-- Footer: Text content followed by right-aligned button
-- Responsive: Stack to full-width on mobile (<640px)
+- Last section: Special background and padding for emphasis
+- Responsive: Stacks on mobile (<640px)
 
 ---
 
