@@ -18,8 +18,13 @@
 	} = null;
 
 	let params: FocusRingParams = { ...defaultParams };
+	let perimeter = Math.round(100 * Math.PI * params.innerDiameter) / 100;
+	let diameter = params.innerDiameter;
 	let advancedOpen = false;
 	let numTeeth = 0;
+
+	// Prototype: lens size input mode selection
+	let lensSizeMode: 'diameter' | 'perimeter' = 'diameter';
 
 	onMount(async () => {
 		// Load params from URL if available, otherwise use defaults
@@ -99,8 +104,21 @@
 		updateUrlHash(params);
 	}
 
+	async function updateByPerimeter(per: number) {
+		diameter = Math.round((100 * per) / Math.PI) / 100;
+		params.innerDiameter = diameter;
+		await updateParams(params);
+	}
+
+	async function updateByDiameter(dia: number) {
+		perimeter = Math.round(100 * Math.PI * diameter) / 100;
+		params.innerDiameter = diameter;
+		await updateParams(params);
+	}
+
 	// convenience for bindings
 	$: params = get(focusRingParams);
+	// $: perimeter = Math.PI * params.innerDiameter;
 </script>
 
 <!-- Main Content Area -->
@@ -122,174 +140,230 @@
 
 			<div class="panel-content-wrapper">
 				<div class="panel-content">
-					<!-- Parameter Controls -->
-					<div class="parameter-group">
-						<label for="innerDiameter" class="param-label">Inner Diameter</label>
-						<input
-							id="innerDiameter"
-							type="number"
-							min="40"
-							max="100"
-							step="0.1"
-							bind:value={params.innerDiameter}
-							onchange={() => updateParams(params)}
-							class="numeric-input"
-						/>
+					<div class="related-params-group">
+						<div class="lens-size-label">Define Lens Size by:</div>
+
+						<!-- Diameter Option Block -->
+						<div class="lens-size-option-block">
+							<label class="radio-with-input-label">
+								<input
+									type="radio"
+									name="lensSizeMode"
+									value="diameter"
+									bind:group={lensSizeMode}
+									class="radio-input"
+								/>
+								<span class="radio-label-text">Lens Diameter [mm]</span>
+							</label>
+							<input
+								id="innerDiameter"
+								type="number"
+								min="40"
+								max="100"
+								step="0.1"
+								bind:value={diameter}
+								onchange={() => updateByDiameter(diameter)}
+								class="numeric-input"
+								class:disabled={lensSizeMode !== 'diameter'}
+								disabled={lensSizeMode !== 'diameter'}
+							/>
+						</div>
+
+						<!-- Perimeter Option Block -->
+						<div class="lens-size-option-block">
+							<label class="radio-with-input-label">
+								<input
+									type="radio"
+									name="lensSizeMode"
+									value="perimeter"
+									bind:group={lensSizeMode}
+									class="radio-input"
+								/>
+								<span class="radio-label-text">Lens Perimeter [mm]</span>
+							</label>
+							<input
+								id="perimeter"
+								type="number"
+								min="125"
+								max="315"
+								step="0.1"
+								bind:value={perimeter}
+								onchange={() => updateByPerimeter(perimeter)}
+								class="numeric-input"
+								class:disabled={lensSizeMode !== 'perimeter'}
+								disabled={lensSizeMode !== 'perimeter'}
+							/>
+						</div>
 					</div>
 
-					<div class="parameter-group">
-						<label for="thickness" class="param-label">Thickness</label>
-						<input
-							id="thickness"
-							type="number"
-							min="1"
-							max="20"
-							step="0.1"
-							bind:value={params.thickness}
-							onchange={() => updateParams(params)}
-							class="numeric-input"
-						/>
+					<!-- Min Wall Width -->
+					<div class="related-params-group">
+						<div class="parameter-group">
+							<label for="minWidth" class="param-label">Min Wall Width [mm]</label>
+							<input
+								id="minWidth"
+								type="number"
+								min="0.5"
+								max="10"
+								step="0.1"
+								bind:value={params.minWidth}
+								onchange={() => updateParams(params)}
+								class="numeric-input"
+							/>
+						</div>
+
+						<div class="parameter-group">
+							<p class="param-label">
+								Resulting Number of Teeth:
+								<span>{numTeeth}</span>
+							</p>
+						</div>
 					</div>
 
-					<div class="parameter-group">
-						<label for="minWidth" class="param-label">Min Width</label>
-						<input
-							id="minWidth"
-							type="number"
-							min="0.5"
-							max="10"
-							step="0.1"
-							bind:value={params.minWidth}
-							onchange={() => updateParams(params)}
-							class="numeric-input"
-						/>
+					<!-- Thickness -->
+					<div class="related-params-group">
+						<div class="parameter-group">
+							<label for="thickness" class="param-label">Thickness [mm]</label>
+							<input
+								id="thickness"
+								type="number"
+								min="1"
+								max="20"
+								step="0.1"
+								bind:value={params.thickness}
+								onchange={() => updateParams(params)}
+								class="numeric-input"
+							/>
+						</div>
 					</div>
 
-					<div class="parameter-group">
-						<label for="printTolerance" class="param-label">Print Tolerance</label>
-						<input
-							id="printTolerance"
-							type="number"
-							min="0"
-							max="1"
-							step="0.01"
-							bind:value={params.printTolerance}
-							onchange={() => updateParams(params)}
-							class="numeric-input"
-						/>
-					</div>
-
-					<div class="parameter-group">
-						<p class="param-label">
-							Number of Teeth:
-							<span>{numTeeth}</span>
-						</p>
+					<!-- Print Tolerance -->
+					<div class="related-params-group">
+						<div class="parameter-group">
+							<label for="printTolerance" class="param-label">Print Tolerance [mm]</label>
+							<input
+								id="printTolerance"
+								type="number"
+								min="0"
+								max="1"
+								step="0.01"
+								bind:value={params.printTolerance}
+								onchange={() => updateParams(params)}
+								class="numeric-input"
+							/>
+						</div>
 					</div>
 
 					<!-- Chamfer Section -->
-					<div class="parameter-group">
-						<label class="checkbox-label">
-							<span>Chamfer Gear</span>
-							<input
-								type="checkbox"
-								bind:checked={params.gearChamfer}
-								onchange={() => updateParams(params)}
-								class="checkbox-input"
-							/>
-						</label>
-					</div>
-
-					{#if params.gearChamfer}
-						<div class="conditional-params" transition:slide={{ duration: 300 }}>
-							<div class="parameter-group">
-								<label for="chamferAngle" class="param-label">Chamfer Angle</label>
+					<div class="related-params-group">
+						<div class="parameter-group">
+							<label class="checkbox-label">
+								<span>Chamfer Gear</span>
 								<input
-									id="chamferAngle"
-									type="number"
-									min="1"
-									max="45"
-									step="0.1"
-									bind:value={params.gearChamferAngle}
+									type="checkbox"
+									bind:checked={params.gearChamfer}
 									onchange={() => updateParams(params)}
-									class="numeric-input"
+									class="checkbox-input"
 								/>
-							</div>
+							</label>
 						</div>
-					{/if}
+
+						{#if params.gearChamfer}
+							<div class="conditional-params" transition:slide={{ duration: 300 }}>
+								<div class="parameter-group">
+									<label for="chamferAngle" class="param-label">Chamfer Angle [°]</label>
+									<input
+										id="chamferAngle"
+										type="number"
+										min="1"
+										max="45"
+										step="0.1"
+										bind:value={params.gearChamferAngle}
+										onchange={() => updateParams(params)}
+										class="numeric-input"
+									/>
+								</div>
+							</div>
+						{/if}
+					</div>
 
 					<!-- Inner Chamfer Section -->
-					<div class="parameter-group">
-						<label class="checkbox-label">
-							<span>Chamfer Inner Bore</span>
-							<input
-								type="checkbox"
-								bind:checked={params.innerChamfer}
-								onchange={() => updateParams(params)}
-								class="checkbox-input"
-							/>
-						</label>
-					</div>
-
-					{#if params.innerChamfer}
-						<div class="conditional-params" transition:slide={{ duration: 300 }}>
-							<div class="parameter-group">
-								<label for="innerChamferSize" class="param-label">Inner Chamfer Size</label>
+					<div class="related-params-group">
+						<div class="parameter-group">
+							<label class="checkbox-label">
+								<span>Chamfer Inner Bore</span>
 								<input
-									id="innerChamferSize"
-									type="number"
-									min="0.1"
-									max="5"
-									step="0.1"
-									bind:value={params.innerChamferSize}
+									type="checkbox"
+									bind:checked={params.innerChamfer}
 									onchange={() => updateParams(params)}
-									class="numeric-input"
+									class="checkbox-input"
 								/>
-							</div>
+							</label>
 						</div>
-					{/if}
+
+						{#if params.innerChamfer}
+							<div class="conditional-params" transition:slide={{ duration: 300 }}>
+								<div class="parameter-group">
+									<label for="innerChamferSize" class="param-label">Inner Chamfer Size [mm]</label>
+									<input
+										id="innerChamferSize"
+										type="number"
+										min="0.1"
+										max="5"
+										step="0.1"
+										bind:value={params.innerChamferSize}
+										onchange={() => updateParams(params)}
+										class="numeric-input"
+									/>
+								</div>
+							</div>
+						{/if}
+					</div>
 
 					<!-- Grub Screws Section -->
-					<div class="parameter-group">
-						<label class="checkbox-label">
-							<span>Grub Screw</span>
-							<input
-								type="checkbox"
-								bind:checked={params.grubScrew}
-								onchange={() => updateParams(params)}
-								class="checkbox-input"
-							/>
-						</label>
-					</div>
-
-					{#if params.grubScrew}
-						<div class="conditional-params" transition:slide={{ duration: 300 }}>
-							<div class="parameter-group">
-								<label for="grubScrewDiameter" class="param-label">Screw Diameter</label>
+					<div class="related-params-group">
+						<div class="parameter-group">
+							<label class="checkbox-label">
+								<span>Grub Screw</span>
 								<input
-									id="grubScrewDiameter"
-									type="number"
-									min="1"
-									max="10"
-									step="0.1"
-									bind:value={params.grubScrewDiameter}
+									type="checkbox"
+									bind:checked={params.grubScrew}
 									onchange={() => updateParams(params)}
-									class="numeric-input"
+									class="checkbox-input"
 								/>
-							</div>
-
-							<div class="parameter-group">
-								<label class="checkbox-label">
-									<span>Second Screw</span>
-									<input
-										type="checkbox"
-										bind:checked={params.grubScrew2}
-										onchange={() => updateParams(params)}
-										class="checkbox-input"
-									/>
-								</label>
-							</div>
+							</label>
 						</div>
-					{/if}
+
+						{#if params.grubScrew}
+							<div class="conditional-params" transition:slide={{ duration: 300 }}>
+								<div class="parameter-group">
+									<label for="grubScrewDiameter" class="param-label">Screw Diameter [mm]</label>
+									<input
+										id="grubScrewDiameter"
+										type="number"
+										min="1"
+										max="10"
+										step="0.1"
+										bind:value={params.grubScrewDiameter}
+										onchange={() => updateParams(params)}
+										class="numeric-input"
+									/>
+								</div>
+
+								<div class="parameter-group">
+									<label class="checkbox-label">
+										<span>Second Screw</span>
+										<input
+											type="checkbox"
+											bind:checked={params.grubScrew2}
+											onchange={() => updateParams(params)}
+											class="checkbox-input"
+										/>
+									</label>
+								</div>
+							</div>
+						{/if}
+					</div>
 
 					<!-- Advanced Parameters Accordion -->
 					<div class="accordion">
@@ -502,10 +576,10 @@
 	.panel-content {
 		flex: 1;
 		overflow-y: auto;
-		padding: var(--space-6);
+		padding: var(--space-4);
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-6);
+		gap: var(--space-4);
 	}
 
 	.parameter-group {
@@ -560,6 +634,76 @@
 	.numeric-input[type='number'] {
 		appearance: textfield;
 		-moz-appearance: textfield;
+	}
+
+	/* Lens Size Label */
+	.lens-size-label {
+		display: block;
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--app-text);
+		margin-bottom: var(--space-3);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--app-text-muted);
+	}
+
+	/* Blocky Option Sections */
+	.lens-size-option-block {
+		padding: var(--space-4);
+		margin-bottom: var(--space-3);
+		border: 2px solid var(--app-border);
+		border-radius: var(--radius-lg);
+		background-color: var(--app-bg);
+		transition: all 0.2s ease;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+		opacity: 0.5;
+	}
+
+	.lens-size-option-block:has(input:checked) {
+		opacity: 1;
+		border-color: var(--app-border);
+	}
+
+	/* Radio Button Styling */
+	.radio-input {
+		width: 20px;
+		height: 20px;
+		cursor: pointer;
+		accent-color: var(--color-primary-600);
+		flex-shrink: 0;
+	}
+
+	.radio-with-input-label {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		cursor: pointer;
+		font-size: var(--text-sm);
+		color: var(--app-text);
+		user-select: none;
+		margin-bottom: var(--space-2);
+	}
+
+	.radio-label-text {
+		font-weight: 600;
+		color: var(--app-text);
+	}
+
+	.lens-size-option-block:has(input:checked) .radio-label-text {
+		color: var(--app-text);
+	}
+
+	.numeric-input:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		background-color: var(--app-panel-bg);
+	}
+
+	.numeric-input.disabled {
+		opacity: 0.5;
 	}
 
 	.panel-footer {
@@ -622,6 +766,17 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-3);
+	}
+
+	/* Related parameters group - lighter than conditional-params */
+	.related-params-group {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+		padding: var(--space-2);
+		border: 1px solid var(--app-border);
+		border-radius: var(--radius-lg);
+		background-color: transparent;
 	}
 
 	.accordion {
