@@ -161,7 +161,7 @@
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
-										The outer diameter of your lens in millimeters (40–100 mm).
+										The outer diameter of your lens in millimeters.
 										<br /><br />
 										<strong>Example:</strong> A 50mm lens ≈ 157mm perimeter
 									{/snippet}
@@ -197,7 +197,7 @@
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
-										The circumference around your lens (125–315 mm).
+										The circumference around your lens.
 										<br /><br />
 										<em>Formula:</em> perimeter = diameter × π
 									{/snippet}
@@ -207,7 +207,7 @@
 								id="perimeter"
 								type="number"
 								min="125"
-								max="315"
+								max="400"
 								step="0.1"
 								bind:value={perimeter}
 								onchange={() => updateByPerimeter(perimeter)}
@@ -228,9 +228,9 @@
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
-										Minimum thickness of the walls between gear teeth.
+										Minimum distance between lense and teeth root.
 										<br /><br />
-										Thicker walls = stronger ring, but fewer teeth.
+										Thicker walls = stronger ring, but more teeth.
 									{/snippet}
 								</Tooltip>
 							</label>
@@ -264,9 +264,9 @@
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
-										Height of the entire focus ring (1–20 mm).
+										Thickness of the entire focus ring (1–20 mm).
 										<br /><br />
-										Taller = easier to grip, thicker = stronger.
+										Thicker = stronger, more tooth to touch.
 									{/snippet}
 								</Tooltip>
 							</label>
