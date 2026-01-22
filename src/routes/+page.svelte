@@ -64,7 +64,10 @@
 
 	function resetParams() {
 		params = { ...defaultParams };
-		updateParams(params);
+		focusRingParams.set(defaultParams);
+		diameter = defaultParams.innerDiameter;
+		perimeter = Math.round(100 * Math.PI * diameter) / 100;
+		updateUrlHash(params);
 	}
 
 	async function shareDesign() {
@@ -99,8 +102,6 @@
 
 	async function updateParams(p: FocusRingParams) {
 		focusRingParams.set(params);
-		await viewer?.update(params);
-		numTeeth = viewer?.getNumTeeth() ?? 0;
 		updateUrlHash(params);
 	}
 
@@ -118,7 +119,6 @@
 
 	// convenience for bindings
 	$: params = get(focusRingParams);
-	// $: perimeter = Math.PI * params.innerDiameter;
 </script>
 
 <!-- Main Content Area -->
