@@ -2,12 +2,13 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { get } from 'svelte/store';
-	import { Share, ArrowDownTray } from 'svelte-heros-v2';
+	import { Share, ArrowDownTray, InformationCircle } from 'svelte-heros-v2';
 
 	import { focusRingParams } from '$lib/focusRing/store';
 	import type { FocusRingParams } from '$lib/focusRing/types';
 	import { defaultParams } from '$lib/focusRing/types';
 	import { getParamsFromUrl, updateUrlHash } from '$lib/focusRing/urlParams';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	let canvas: HTMLCanvasElement;
 	let viewer: null | {
@@ -154,6 +155,16 @@
 									class="radio-input"
 								/>
 								<span class="radio-label-text">Lens Diameter [mm]</span>
+								<Tooltip position="left">
+									{#snippet trigger()}
+										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+									{/snippet}
+									{#snippet content()}
+										The outer diameter of your lens in millimeters (40–100 mm).
+										<br /><br />
+										<strong>Example:</strong> A 50mm lens ≈ 157mm perimeter
+									{/snippet}
+								</Tooltip>
 							</label>
 							<input
 								id="innerDiameter"
@@ -180,6 +191,16 @@
 									class="radio-input"
 								/>
 								<span class="radio-label-text">Lens Perimeter [mm]</span>
+								<Tooltip position="left">
+									{#snippet trigger()}
+										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+									{/snippet}
+									{#snippet content()}
+										The circumference around your lens (125–315 mm).
+										<br /><br />
+										<em>Formula:</em> perimeter = diameter × π
+									{/snippet}
+								</Tooltip>
 							</label>
 							<input
 								id="perimeter"
@@ -199,7 +220,19 @@
 					<!-- Min Wall Width -->
 					<div class="related-params-group">
 						<div class="parameter-group">
-							<label for="minWidth" class="param-label">Min Wall Width [mm]</label>
+							<label for="minWidth" class="param-label">
+								<span>Min Wall Width [mm]</span>
+								<Tooltip position="left">
+									{#snippet trigger()}
+										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+									{/snippet}
+									{#snippet content()}
+										Minimum thickness of the walls between gear teeth.
+										<br /><br />
+										Thicker walls = stronger ring, but fewer teeth.
+									{/snippet}
+								</Tooltip>
+							</label>
 							<input
 								id="minWidth"
 								type="number"
@@ -223,7 +256,19 @@
 					<!-- Thickness -->
 					<div class="related-params-group">
 						<div class="parameter-group">
-							<label for="thickness" class="param-label">Thickness [mm]</label>
+							<label for="thickness" class="param-label">
+								<span>Thickness [mm]</span>
+								<Tooltip position="left">
+									{#snippet trigger()}
+										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+									{/snippet}
+									{#snippet content()}
+										Height of the entire focus ring (1–20 mm).
+										<br /><br />
+										Taller = easier to grip, thicker = stronger.
+									{/snippet}
+								</Tooltip>
+							</label>
 							<input
 								id="thickness"
 								type="number"
@@ -240,7 +285,19 @@
 					<!-- Print Tolerance -->
 					<div class="related-params-group">
 						<div class="parameter-group">
-							<label for="printTolerance" class="param-label">Print Tolerance [mm]</label>
+							<label for="printTolerance" class="param-label">
+								<span>Print Tolerance [mm]</span>
+								<Tooltip position="left">
+									{#snippet trigger()}
+										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+									{/snippet}
+									{#snippet content()}
+										Shrinkage compensation for your 3D printer.
+										<br /><br />
+										Typical: 0.2–0.5 mm for FDM printers.
+									{/snippet}
+								</Tooltip>
+							</label>
 							<input
 								id="printTolerance"
 								type="number"
@@ -599,6 +656,9 @@
 		font-weight: 500;
 		font-size: var(--text-sm);
 		color: var(--app-text);
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
 	}
 
 	.numeric-input {
