@@ -334,7 +334,7 @@
 									<input
 										id="chamferAngle"
 										type="number"
-										min="1"
+										min="5"
 										max="45"
 										step="0.1"
 										bind:value={params.gearChamferAngle}
@@ -367,7 +367,7 @@
 									<input
 										id="innerChamferSize"
 										type="number"
-										min="0.1"
+										min="0.5"
 										max="5"
 										step="0.1"
 										bind:value={params.innerChamferSize}
@@ -396,17 +396,20 @@
 						{#if params.grubScrew}
 							<div class="conditional-params" transition:slide={{ duration: 300 }}>
 								<div class="parameter-group">
-									<label for="grubScrewDiameter" class="param-label">Screw Diameter [mm]</label>
-									<input
+									<label for="grubScrewDiameter" class="param-label">Screw Size</label>
+									<select
 										id="grubScrewDiameter"
-										type="number"
-										min="1"
-										max="10"
-										step="0.1"
-										bind:value={params.grubScrewDiameter}
-										onchange={() => updateParams(params)}
-										class="numeric-input"
-									/>
+										value={String(params.grubScrewDiameter)}
+										onchange={(e) => {
+											const val = parseFloat((e.target as HTMLSelectElement).value);
+											params.grubScrewDiameter = val;
+											updateParams(params);
+										}}
+										class="select-input"
+									>
+										<option value="2.8">M3 (2.8 mm hole)</option>
+										<option value="3.7">M4 (3.7 mm hole)</option>
+									</select>
 								</div>
 
 								<div class="parameter-group">
@@ -818,6 +821,30 @@
 		height: 18px;
 		cursor: pointer;
 		accent-color: var(--color-primary-600);
+	}
+
+	.select-input {
+		width: 100%;
+		padding: var(--space-2) var(--space-3);
+		font-size: var(--text-sm);
+		font-weight: 500;
+		color: var(--app-text);
+		background-color: var(--app-bg);
+		border: 1px solid var(--app-border);
+		border-radius: var(--radius-lg);
+		transition: all 0.2s ease;
+		outline: none;
+		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+		cursor: pointer;
+	}
+
+	.select-input:hover {
+		border-color: var(--color-neutral-300);
+	}
+
+	.select-input:focus {
+		border-color: var(--color-primary-500);
+		box-shadow: 0 0 0 3px rgb(45 140 75 / 0.1);
 	}
 
 	.conditional-params {
