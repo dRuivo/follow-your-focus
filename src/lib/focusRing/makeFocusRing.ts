@@ -140,7 +140,7 @@ export function makeFocusRing(params: FocusRingParams): {
 	if (params.grubScrew) {
 		// --- Grub screw hole
 		const screw = cylinder({
-			radius: params.grubScrewDiameter / 2 - 2 * params.printTolerance,
+			radius: params.grubScrewDiameter / 2,
 			height: outerRadius + eps,
 			segments: segmentsForCircumference(params.grubScrewDiameter / 2, 0.4)
 		});

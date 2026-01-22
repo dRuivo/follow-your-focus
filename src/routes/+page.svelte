@@ -9,6 +9,7 @@
 	import { defaultParams } from '$lib/focusRing/types';
 	import { getParamsFromUrl, updateUrlHash } from '$lib/focusRing/urlParams';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import SliderInput from '$lib/components/SliderInput.svelte';
 
 	let canvas: HTMLCanvasElement;
 	let viewer: null | {
@@ -286,7 +287,7 @@
 					<div class="related-params-group">
 						<div class="parameter-group">
 							<label for="printTolerance" class="param-label">
-								<span>Print Tolerance [mm]</span>
+								<span>Print Tolerance</span>
 								<Tooltip position="left">
 									{#snippet trigger()}
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
@@ -298,15 +299,16 @@
 									{/snippet}
 								</Tooltip>
 							</label>
-							<input
-								id="printTolerance"
-								type="number"
-								min="0"
-								max="1"
-								step="0.01"
-								bind:value={params.printTolerance}
-								onchange={() => updateParams(params)}
-								class="numeric-input"
+							<SliderInput
+								value={params.printTolerance}
+								min={0}
+								max={0.5}
+								step={0.05}
+								unit="mm"
+								onChange={(v) => {
+									params.printTolerance = v;
+									updateParams(params);
+								}}
 							/>
 						</div>
 					</div>
