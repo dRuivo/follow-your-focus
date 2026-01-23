@@ -30,12 +30,13 @@
 		if (!dialogElement) return;
 
 		if (isOpen) {
-			dialogElement.style.display = 'block';
 			if (typeof dialogElement.showModal === 'function') {
 				dialogElement.showModal();
 			} else {
+				// Safari fallback
 				dialogElement.setAttribute('open', '');
 			}
+			// Focus first button after open
 			setTimeout(() => {
 				const primaryBtn = dialogElement?.querySelector(
 					'.modal-footer .btn-primary'
@@ -46,9 +47,9 @@
 			if (typeof dialogElement.close === 'function') {
 				dialogElement.close();
 			} else {
+				// Safari fallback
 				dialogElement.removeAttribute('open');
 			}
-			dialogElement.style.display = '';
 		}
 	});
 
@@ -64,13 +65,7 @@
 	});
 </script>
 
-<dialog
-	bind:this={dialogElement}
-	onclick={handleBackdropClick}
-	oncancel={() => closeModal()}
-	class="modal"
-	aria-modal="true"
->
+<dialog bind:this={dialogElement} class="modal" aria-modal="true" onclick={handleBackdropClick}>
 	<div class="modal-overlay">
 		<div class="modal-content">
 			{#if header}
@@ -113,7 +108,7 @@
 		left: 50% !important;
 		top: 50% !important;
 		transform: translate(-50%, -50%) !important;
-		z-index: 1000 !important;
+		z-index: 10000 !important;
 		visibility: visible !important;
 		opacity: 1 !important;
 	}
@@ -135,14 +130,14 @@
 	.modal-overlay {
 		display: flex;
 		flex-direction: column;
-		height: 100%;
+		height: auto;
 		width: 100%;
 	}
 
 	.modal-content {
 		display: flex;
 		flex-direction: column;
-		height: 100%;
+		height: auto;
 	}
 
 	.modal-header {
