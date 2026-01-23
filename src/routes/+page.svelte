@@ -384,6 +384,14 @@
 						<div class="parameter-group">
 							<label class="checkbox-label">
 								<span>Grub Screw</span>
+								<Tooltip position="left">
+									{#snippet trigger()}
+										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+									{/snippet}
+									{#snippet content()}
+										Add a grub screw hole to secure the focus ring to your lens.
+									{/snippet}
+								</Tooltip>
 								<input
 									type="checkbox"
 									bind:checked={params.grubScrew}
@@ -396,7 +404,23 @@
 						{#if params.grubScrew}
 							<div class="conditional-params" transition:slide={{ duration: 300 }}>
 								<div class="parameter-group">
-									<label for="grubScrewDiameter" class="param-label">Screw Size</label>
+									<label for="grubScrewDiameter" class="param-label">
+										<span>Screw Size</span>
+										<Tooltip position="left">
+											{#snippet trigger()}
+												<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+											{/snippet}
+											{#snippet content()}
+												Select the grub screw size to match your lens.
+												<br /><br />
+												Common sizes:
+												<ul>
+													<li><strong>M3</strong> - 2.8 mm hole diameter</li>
+													<li><strong>M4</strong> - 3.7 mm hole diameter</li>
+												</ul>
+											{/snippet}
+										</Tooltip>
+									</label>
 									<select
 										id="grubScrewDiameter"
 										value={String(params.grubScrewDiameter)}
@@ -411,10 +435,37 @@
 										<option value="3.7">M4 (3.7 mm hole)</option>
 									</select>
 								</div>
-
+								<div class="parameter-group">
+									<label class="checkbox-label">
+										<span>Screw Cap</span>
+										<Tooltip position="left">
+											{#snippet trigger()}
+												<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+											{/snippet}
+											{#snippet content()}
+												Add a cap to cover the grub screw for a cleaner look and to protect the lens
+												from scratches.
+											{/snippet}
+										</Tooltip>
+										<input
+											type="checkbox"
+											bind:checked={params.grubScrewCap}
+											onchange={() => updateParams(params)}
+											class="checkbox-input"
+										/>
+									</label>
+								</div>
 								<div class="parameter-group">
 									<label class="checkbox-label">
 										<span>Second Screw</span>
+										<Tooltip position="left">
+											{#snippet trigger()}
+												<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+											{/snippet}
+											{#snippet content()}
+												Add a second grub screw at 90° from the first for extra security.
+											{/snippet}
+										</Tooltip>
 										<input
 											type="checkbox"
 											bind:checked={params.grubScrew2}

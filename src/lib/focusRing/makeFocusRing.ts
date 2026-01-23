@@ -15,7 +15,7 @@ export function makeFocusRing(params: FocusRingParams): {
 	numTeeth: number;
 } {
 	const now = new Date();
-	const { cylinder, polygon } = primitives;
+	const { cylinder, polygon, cuboid } = primitives;
 	const { extrudeLinear, extrudeRotate } = extrusions;
 	const { union, subtract } = booleans;
 	const { rotate, rotateZ, translate } = transforms;
@@ -135,7 +135,6 @@ export function makeFocusRing(params: FocusRingParams): {
 
 	// let result = teethUnion;
 	let result = union(rootDisk, teethUnion);
-	result = subtract(result, translate([0, 0, -eps / 2], bore));
 
 	if (params.grubScrew) {
 		// --- Grub screw hole
@@ -149,6 +148,7 @@ export function makeFocusRing(params: FocusRingParams): {
 			result,
 			translate([outerRadius - eps / 2, 0, 0], rotate([0, Math.PI / 2, 0], screw))
 		);
+
 		if (params.grubScrew2) {
 			// Scew hole 2
 			result = subtract(
@@ -156,7 +156,53 @@ export function makeFocusRing(params: FocusRingParams): {
 				translate([0, outerRadius - eps / 2, 0], rotate([Math.PI / 2, 0, 0], screw))
 			);
 		}
+
+		if (params.grubScrewCap) {
+			// Screw cap recess
+			const cap = cylinder({
+				radius: (params.grubScrewDiameter * 1.2) / 2,
+				height: 3,
+				segments: segmentsForCircumference((params.grubScrewDiameter * 1.2) / 2, 0.4)
+			});
+			result = subtract(
+				result,
+				translate([innerRadius + params.printTolerance / 2, 0, 0], rotate([0, Math.PI / 2, 0], cap))
+			);
+
+			const cap2 = rotate(
+				[0, 0, Math.PI / 4],
+				cuboid({
+					size: [params.grubScrewDiameter, params.grubScrewDiameter, 2]
+				})
+			);
+			result = union(
+				result,
+				translate(
+					[innerRadius + params.printTolerance / 2, 0, 0],
+					rotate([0, Math.PI / 2, 0], cap2)
+				)
+			);
+			if (params.grubScrew2) {
+				result = subtract(
+					result,
+					translate(
+						[0, innerRadius + params.printTolerance / 2, 0],
+						rotate([Math.PI / 2, 0, 0], cap)
+					)
+				);
+				result = union(
+					result,
+					translate(
+						[0, innerRadius + params.printTolerance / 2, 0],
+						rotate([Math.PI / 2, 0, 0], cap2)
+					)
+				);
+			}
+		}
 	}
+
+	// --- Subtract bore
+	result = subtract(result, translate([0, 0, -eps / 2], bore));
 
 	// --- Chamfer gear sides
 	if (params.gearChamfer) {
