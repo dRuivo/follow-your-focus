@@ -155,10 +155,13 @@
 									bind:group={lensSizeMode}
 									class="radio-input"
 								/>
-								<span class="radio-label-text">Lens Diameter [mm]</span>
 								<Tooltip position="left">
 									{#snippet trigger()}
-										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
+										<span class="radio-label-text">Lens Diameter [mm] </span><InformationCircle
+											size="16"
+											strokeWidth="1.5"
+											class="help-icon"
+										/>
 									{/snippet}
 									{#snippet content()}
 										The outer diameter of your lens in millimeters.
@@ -191,9 +194,9 @@
 									bind:group={lensSizeMode}
 									class="radio-input"
 								/>
-								<span class="radio-label-text">Lens Perimeter [mm]</span>
 								<Tooltip position="left">
 									{#snippet trigger()}
+										<span class="radio-label-text">Lens Perimeter [mm]</span>
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
@@ -222,9 +225,9 @@
 					<div class="related-params-group">
 						<div class="parameter-group">
 							<label for="minWidth" class="param-label">
-								<span>Min Wall Width [mm]</span>
 								<Tooltip position="left">
 									{#snippet trigger()}
+										<span>Min Wall Width [mm]</span>
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
@@ -258,9 +261,9 @@
 					<div class="related-params-group">
 						<div class="parameter-group">
 							<label for="thickness" class="param-label">
-								<span>Thickness [mm]</span>
 								<Tooltip position="left">
 									{#snippet trigger()}
+										<span>Thickness [mm]</span>
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
@@ -287,13 +290,14 @@
 					<div class="related-params-group">
 						<div class="parameter-group">
 							<label for="printTolerance" class="param-label">
-								<span>Print Tolerance</span>
 								<Tooltip position="left">
 									{#snippet trigger()}
+										<span>Print Tolerance</span>
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
-										Shrinkage compensation for your 3D printer.
+										Shrinkage compensation for your 3D printer. This only affects the inner diameter
+										of the ring, so you can keep a direct measurement of your lens.
 										<br /><br />
 										Typical: 0.2–0.5 mm for FDM printers.
 									{/snippet}
@@ -383,9 +387,9 @@
 					<div class="related-params-group">
 						<div class="parameter-group">
 							<label class="checkbox-label">
-								<span>Grub Screw</span>
 								<Tooltip position="left">
 									{#snippet trigger()}
+										<span>Grub Screw</span>
 										<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 									{/snippet}
 									{#snippet content()}
@@ -405,9 +409,9 @@
 							<div class="conditional-params" transition:slide={{ duration: 300 }}>
 								<div class="parameter-group">
 									<label for="grubScrewDiameter" class="param-label">
-										<span>Screw Size</span>
 										<Tooltip position="left">
 											{#snippet trigger()}
+												<span>Screw Size</span>
 												<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 											{/snippet}
 											{#snippet content()}
@@ -437,9 +441,9 @@
 								</div>
 								<div class="parameter-group">
 									<label class="checkbox-label">
-										<span>Screw Cap</span>
 										<Tooltip position="left">
 											{#snippet trigger()}
+												<span>Screw Cap</span>
 												<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 											{/snippet}
 											{#snippet content()}
@@ -457,9 +461,9 @@
 								</div>
 								<div class="parameter-group">
 									<label class="checkbox-label">
-										<span>Second Screw</span>
 										<Tooltip position="left">
 											{#snippet trigger()}
+												<span>Second Screw</span>
 												<InformationCircle size="16" strokeWidth="1.5" class="help-icon" />
 											{/snippet}
 											{#snippet content()}
