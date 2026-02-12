@@ -3,7 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import { Share, ArrowDownTray, InformationCircle, Printer } from 'svelte-heros-v2';
 
-	import HelpPrintingModal from '$lib/components/HelpPrintingModal.svelte';
 	import { focusRingParams } from '$lib/focusRing/store';
 	import type { FocusRingParams } from '$lib/focusRing/types';
 	import { defaultParams } from '$lib/focusRing/types';
@@ -11,7 +10,7 @@
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import SliderInput from '$lib/components/SliderInput.svelte';
 
-	let helpPrintModalOpen = $state(false);
+	import { openModal } from '$lib/stores/modals';
 
 	let canvas: HTMLCanvasElement;
 	let viewer: null | {
@@ -131,7 +130,6 @@
 </script>
 
 <!-- Main Content Area -->
-<HelpPrintingModal bind:isOpen={helpPrintModalOpen} />
 <main class="page-main">
 	<div class="page-title">
 		<h1 style="color: var(--color-primary-600);">Focus Ring Designer</h1>
@@ -573,7 +571,7 @@
 					</button>
 					<button
 						class="btn btn-secondary btn-icon btn-help"
-						onclick={() => (helpPrintModalOpen = true)}
+						onclick={() => openModal('helpPrinting')}
 						title="Help Printing"
 					>
 						<Printer class="icon-sm" />

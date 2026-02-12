@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EXTERNAL_URLS } from '$lib/config';
+	import { openModal } from '$lib/stores/modals';
 	import Modal from './Modal.svelte';
 
 	let {
@@ -44,7 +44,12 @@
 		</section>
 
 		<section>
-			<p>If you need more help, Send me a Note.</p>
+			<p>
+				If you need more help, <button
+					class="link-button"
+					onclick={() => (closeModal(), openModal('feedback'))}>send me a note</button
+				>.
+			</p>
 		</section>
 	{/snippet}
 
@@ -116,6 +121,26 @@
 		line-height: var(--leading-relaxed);
 		color: var(--app-text);
 		margin-bottom: var(--space-1);
+	}
+
+	.link-button {
+		background: none;
+		border: none;
+		padding: 0;
+		color: var(--color-primary-600);
+		cursor: pointer;
+		font-weight: 600;
+		text-decoration: underline;
+		transition: color 0.2s ease;
+	}
+
+	.link-button:hover {
+		color: var(--color-primary-700);
+	}
+
+	.link-button:focus-visible {
+		outline: 2px solid var(--color-primary-600);
+		outline-offset: 2px;
 	}
 
 	:global(.modal-footer) {

@@ -8,10 +8,9 @@
 	import IntroModal from '$lib/components/IntroModal.svelte';
 	import FeedbackModal from '$lib/components/FeedbackModal.svelte';
 	import WhatNextModal from '$lib/components/WhatNextModal.svelte';
+	import HelpPrintingModal from '$lib/components/HelpPrintingModal.svelte';
+	import { modals, openModal } from '$lib/stores/modals';
 
-	let feedbackOpen = $state(false);
-	let introModalOpen = $state(true);
-	let whatNextModalOpen = $state(false);
 	let mobileMenuOpen = $state(false);
 
 	let { children } = $props();
@@ -21,9 +20,10 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<IntroModal bind:isOpen={introModalOpen} />
-<FeedbackModal bind:isOpen={feedbackOpen} />
-<WhatNextModal bind:isOpen={whatNextModalOpen} />
+<IntroModal bind:isOpen={$modals.intro} />
+<FeedbackModal bind:isOpen={$modals.feedback} />
+<WhatNextModal bind:isOpen={$modals.whatNext} />
+<HelpPrintingModal bind:isOpen={$modals.helpPrinting} />
 
 <div class="app-wrapper">
 	<header class="app-header">
@@ -34,11 +34,11 @@
 
 		<!-- Desktop Navigation -->
 		<nav class="nav nav-desktop">
-			<button class="nav-btn" type="button" onclick={() => (introModalOpen = true)}>About</button>
-			<button class="nav-btn" type="button" onclick={() => (feedbackOpen = true)}
+			<button class="nav-btn" type="button" onclick={() => openModal('intro')}>About</button>
+			<button class="nav-btn" type="button" onclick={() => openModal('feedback')}
 				>Leave a Note</button
 			>
-			<button class="nav-btn" type="button" onclick={() => (whatNextModalOpen = true)}
+			<button class="nav-btn" type="button" onclick={() => openModal('whatNext')}
 				>What's Next</button
 			>
 			<a class="nav-link" href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer"
@@ -70,7 +70,7 @@
 				<button
 					class="mobile-menu-item"
 					onclick={() => {
-						introModalOpen = true;
+						openModal('intro');
 						mobileMenuOpen = false;
 					}}
 				>
@@ -79,7 +79,7 @@
 				<button
 					class="mobile-menu-item"
 					onclick={() => {
-						feedbackOpen = true;
+						openModal('feedback');
 						mobileMenuOpen = false;
 					}}
 				>
@@ -88,7 +88,7 @@
 				<button
 					class="mobile-menu-item"
 					onclick={() => {
-						whatNextModalOpen = true;
+						openModal('whatNext');
 						mobileMenuOpen = false;
 					}}
 				>

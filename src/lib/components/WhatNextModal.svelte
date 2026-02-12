@@ -2,6 +2,8 @@
 	import { EXTERNAL_URLS } from '$lib/config';
 	import Modal from './Modal.svelte';
 
+	import { openModal } from '$lib/stores/modals';
+
 	let {
 		isOpen = $bindable(false),
 		onClose = (): void => {}
@@ -52,7 +54,12 @@
 		</section>
 
 		<section>
-			<p>If you'd like to help, send me a Note.</p>
+			<p>
+				If you'd like to help, <button
+					class="link-button"
+					onclick={() => (closeModal(), openModal('feedback'))}>send me a note</button
+				>.
+			</p>
 			<p>Another way would be by sharing it or leaving a tip:</p>
 			<a href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer">☕ Buy Me a Coffee</a>
 		</section>
@@ -147,6 +154,26 @@
 		line-height: var(--leading-relaxed);
 		color: var(--app-text);
 		margin-bottom: var(--space-1);
+	}
+
+	.link-button {
+		background: none;
+		border: none;
+		padding: 0;
+		color: var(--color-primary-600);
+		cursor: pointer;
+		font-weight: 600;
+		text-decoration: underline;
+		transition: color 0.2s ease;
+	}
+
+	.link-button:hover {
+		color: var(--color-primary-700);
+	}
+
+	.link-button:focus-visible {
+		outline: 2px solid var(--color-primary-600);
+		outline-offset: 2px;
 	}
 
 	:global(.modal-footer) {
