@@ -15,46 +15,36 @@
 
 <Modal bind:isOpen {onClose}>
 	{#snippet header()}
-		<h1>What's next</h1>
-		<h2>This project is a living work in progress</h2>
-		<h3>Here are some things I may work on next:</h3>
+		<h1>Need Help printing?</h1>
+		<h2>Here are some tips</h2>
 	{/snippet}
 
 	{#snippet content()}
 		<section>
-			<h2>User Experience</h2>
+			<h2>Material Selection</h2>
+			<p>
+				Any material will do. A simple PLA can offer great results, but if you want the part to last
+				longer, consider using ABS or ASA.
+			</p>
+			<p>If you're doing a screwless option, TPU is a very good choice.</p>
+			<p>There is no need for a fiber filed filament.</p>
+		</section>
+
+		<section>
+			<h2>Print parameters</h2>
+			<p>A standard 0.4mm nozzle profile with 0.2mm layer height creates good results.</p>
+			<p>If you want to explore, here are some things to consider:</p>
 			<ul>
-				<li>Tutorial</li>
-				<li>Preset saving and loading</li>
-				<li>Healthy limits on parameters</li>
+				<li>Line width should be relatively small, go finer for crispier teeth.</li>
+				<li>Layer height doesn't affect the quality much.</li>
+				<li>Increase wall loops for more durable parts (3 or more)</li>
+				<li>Infill can be low, around 10-20%</li>
+				<li>Standard top and bottom layers are fine (3-5)</li>
 			</ul>
 		</section>
 
 		<section>
-			<h2>Focus Ring Model</h2>
-			<ul>
-				<li>Text on inside</li>
-				<li>Performance enhancements</li>
-			</ul>
-		</section>
-
-		<section>
-			<h2>How-to and Guides</h2>
-			<ul>
-				<li>How to measure the lens</li>
-				<li>Printing guide</li>
-			</ul>
-		</section>
-
-		<section>
-			<h2>Hardware</h2>
-			<p>Open Follow Focus system</p>
-		</section>
-
-		<section>
-			<p>If you'd like to help, send me a Note.</p>
-			<p>Another way would be by sharing it or leaving a tip:</p>
-			<a href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer">☕ Buy Me a Coffee</a>
+			<p>If you need more help, Send me a Note.</p>
 		</section>
 	{/snippet}
 
@@ -97,27 +87,6 @@
 		border-radius: var(--radius-lg);
 		padding: var(--space-4);
 		gap: var(--space-1);
-	}
-
-	section:last-child a {
-		color: var(--color-warning-600);
-		text-decoration: none;
-		font-weight: 600;
-		transition: all 0.2s ease;
-		border-bottom: 2px solid transparent;
-		padding-bottom: 2px;
-		display: inline;
-		width: fit-content;
-	}
-
-	section:last-child a:hover {
-		color: var(--color-warning-700);
-		border-bottom-color: var(--color-warning-600);
-	}
-
-	section:last-child a:focus-visible {
-		outline: 2px solid var(--color-warning-600);
-		outline-offset: 2px;
 	}
 
 	h2 {

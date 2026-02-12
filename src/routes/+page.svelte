@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import { get } from 'svelte/store';
-	import { Share, ArrowDownTray, InformationCircle } from 'svelte-heros-v2';
+	import { Share, ArrowDownTray, InformationCircle, Printer } from 'svelte-heros-v2';
 
+	import HelpPrintingModal from '$lib/components/HelpPrintingModal.svelte';
 	import { focusRingParams } from '$lib/focusRing/store';
 	import type { FocusRingParams } from '$lib/focusRing/types';
 	import { defaultParams } from '$lib/focusRing/types';
 	import { getParamsFromUrl, updateUrlHash } from '$lib/focusRing/urlParams';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import SliderInput from '$lib/components/SliderInput.svelte';
+
+	let helpPrintModalOpen = $state(false);
 
 	let canvas: HTMLCanvasElement;
 	let viewer: null | {
@@ -19,20 +21,22 @@
 		destroy: () => void;
 	} = null;
 
-	let params: FocusRingParams = { ...defaultParams };
-	let perimeter = Math.round(100 * Math.PI * params.innerDiameter) / 100;
-	let diameter = params.innerDiameter;
-	let advancedOpen = false;
-	let numTeeth = 0;
+	let params: FocusRingParams = $state({ ...defaultParams });
+	let perimeter = $state(Math.round(100 * Math.PI * params.innerDiameter) / 100);
+	let diameter = $state(params.innerDiameter);
+	let advancedOpen = $state(false);
+	let numTeeth = $state(0);
 
 	// Prototype: lens size input mode selection
-	let lensSizeMode: 'diameter' | 'perimeter' = 'diameter';
+	let lensSizeMode: 'diameter' | 'perimeter' = $state('diameter');
+	let unsubscribeParams: (() => void) | null = null;
 
 	onMount(async () => {
 		// Load params from URL if available, otherwise use defaults
 		const urlParams = getParamsFromUrl();
 		if (urlParams) {
 			params = urlParams;
+			focusRingParams.set(urlParams);
 		}
 
 		canvas = document.getElementById('c') as HTMLCanvasElement;
@@ -40,6 +44,10 @@
 		viewer = mod.createEngine(canvas);
 		await viewer.update(params);
 		numTeeth = viewer.getNumTeeth();
+
+		unsubscribeParams = focusRingParams.subscribe((value) => {
+			params = value;
+		});
 
 		// Listen for hash changes (browser back/forward)
 		if (typeof window !== 'undefined') {
@@ -49,6 +57,7 @@
 
 	onDestroy(() => {
 		viewer?.destroy();
+		unsubscribeParams?.();
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('hashchange', handleHashChange);
 		}
@@ -66,9 +75,7 @@
 
 	function resetParams() {
 		params = { ...defaultParams };
-		focusRingParams.set(defaultParams);
-		diameter = defaultParams.innerDiameter;
-		perimeter = Math.round(100 * Math.PI * diameter) / 100;
+		focusRingParams.set({ ...defaultParams });
 		updateUrlHash(params);
 	}
 
@@ -103,27 +110,28 @@
 	}
 
 	async function updateParams(p: FocusRingParams) {
-		focusRingParams.set(params);
-		updateUrlHash(params);
+		const next = { ...p };
+		focusRingParams.set(next);
+		updateUrlHash(next);
 	}
 
 	async function updateByPerimeter(per: number) {
-		diameter = Math.round((100 * per) / Math.PI) / 100;
-		params.innerDiameter = diameter;
+		const nextDiameter = Math.round((100 * per) / Math.PI) / 100;
+		diameter = nextDiameter;
+		params.innerDiameter = nextDiameter;
 		await updateParams(params);
 	}
 
 	async function updateByDiameter(dia: number) {
-		perimeter = Math.round(100 * Math.PI * diameter) / 100;
-		params.innerDiameter = diameter;
+		const nextPerimeter = Math.round(100 * Math.PI * dia) / 100;
+		perimeter = nextPerimeter;
+		params.innerDiameter = dia;
 		await updateParams(params);
 	}
-
-	// convenience for bindings
-	$: params = get(focusRingParams);
 </script>
 
 <!-- Main Content Area -->
+<HelpPrintingModal bind:isOpen={helpPrintModalOpen} />
 <main class="page-main">
 	<div class="page-title">
 		<h1 style="color: var(--color-primary-600);">Focus Ring Designer</h1>
@@ -563,6 +571,14 @@
 						<ArrowDownTray class="icon-sm" />
 						<span>STL</span>
 					</button>
+					<button
+						class="btn btn-secondary btn-icon btn-help"
+						onclick={() => (helpPrintModalOpen = true)}
+						title="Help Printing"
+					>
+						<Printer class="icon-sm" />
+						<span>Help</span>
+					</button>
 				</div>
 			</div>
 		</aside>
@@ -842,11 +858,15 @@
 	}
 
 	.panel-footer .btn-share {
-		flex: 0 0 calc(33.333% - calc(var(--space-3) / 2));
+		flex: 0 0 calc(20% - calc(var(--space-3) / 2));
 	}
 
 	.panel-footer .btn-export {
-		flex: 0 0 calc(66.666% - calc(var(--space-3) / 2));
+		flex: 0 0 calc(40% - calc(var(--space-3) / 2));
+	}
+
+	.panel-footer .btn-help {
+		flex: 0 0 calc(40% - calc(var(--space-3) / 2));
 	}
 
 	.panel-footer .btn-icon {

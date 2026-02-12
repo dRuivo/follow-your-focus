@@ -53,9 +53,10 @@ export class FocusRingWorkerManager {
 
 			this.requestMap.set(id, { resolve, reject });
 
+			const safeParams = { ...params };
 			this.worker.postMessage({
 				type: 'generate',
-				params,
+				params: safeParams,
 				id
 			});
 
