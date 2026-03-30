@@ -134,6 +134,10 @@
 						I read everything and genuinely appreciate your thoughts. I can't reply to everything or
 						implement every idea, but your feedback shapes what I build next.
 					</p>
+					<p class="privacy-note">
+						Transparency: when you send a note, your message and optional contact details are
+						processed to deliver and respond by email.
+					</p>
 				</div>
 
 				<div class="modal-actions">
@@ -300,6 +304,11 @@
 
 	.footer-content p:last-child {
 		margin-bottom: 0;
+	}
+
+	.privacy-note {
+		font-size: var(--text-xs);
+		color: var(--app-text-muted);
 	}
 
 	.modal-actions {

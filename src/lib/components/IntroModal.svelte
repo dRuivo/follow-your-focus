@@ -65,6 +65,23 @@
 		</section>
 
 		<section class="modal-section">
+			<h2>Privacy & transparency</h2>
+			<p>Core ring generation happens locally in your browser.</p>
+			<p>
+				This app does not use cookies for analytics. We use
+				<a href="https://vercel.com/docs/analytics" target="_blank" rel="noreferrer"
+					>Vercel Web Analytics</a
+				>
+				for privacy-respecting, aggregate usage insights.
+			</p>
+			<p>Data leaves your device only when you choose to submit feedback.</p>
+			<p class="consent-note consent-link">
+				Want to verify these claims? Review the source and documentation on
+				<a href={EXTERNAL_URLS.GITHUB_REPO} target="_blank" rel="noreferrer">GitHub</a>.
+			</p>
+		</section>
+
+		<section class="modal-section">
 			<h2>Support</h2>
 			<p>This project is free forever. If it helps you, consider sharing it or leaving a tip:</p>
 			<a href={EXTERNAL_URLS.BUY_ME_COFFEE} target="_blank" rel="noreferrer">☕ Buy Me a Coffee</a>
@@ -76,6 +93,7 @@
 			<button class="btn btn-secondary" onclick={openGitHub}>View on GitHub</button>
 			<button class="btn btn-primary" onclick={closeModal}>Enter the tool</button>
 		</div>
+		<p class="consent-note">By entering, you acknowledge this privacy notice.</p>
 	{/snippet}
 </Modal>
 
@@ -155,7 +173,7 @@
 	:global(.modal-footer) {
 		justify-content: flex-end;
 		align-items: center;
-		flex-wrap: nowrap;
+		flex-wrap: wrap;
 	}
 
 	.modal-actions {
@@ -170,6 +188,18 @@
 		justify-content: center;
 	}
 
+	.consent-note {
+		margin: var(--space-2) 0 0;
+		font-size: var(--text-xs);
+		color: var(--app-text-muted);
+		width: 100%;
+		text-align: left;
+	}
+
+	.consent-link {
+		margin-top: var(--space-1);
+	}
+
 	@media (max-width: 640px) {
 		:global(.modal-header h1) {
 			font-size: var(--text-xl);
@@ -181,6 +211,10 @@
 
 		:global(.modal-footer .btn) {
 			width: 100%;
+		}
+
+		.consent-note {
+			text-align: left;
 		}
 	}
 </style>

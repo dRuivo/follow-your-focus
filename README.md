@@ -23,8 +23,8 @@ Professional filmmaking accessories are often overpriced, locked behind propriet
 
 No accounts.  
 No subscriptions.  
-No telemetry.  
 No platform lock-in.
+Privacy-respecting aggregate analytics (Vercel Web Analytics).
 
 ---
 
@@ -44,9 +44,10 @@ No platform lock-in.
 
 ### 🕊 Privacy by Design
 
-- All computation happens locally
-- No data leaves your device
-- No tracking, analytics, or profiling
+- Core ring generation happens locally in your browser
+- Data leaves your device only when you submit feedback
+- Privacy-respecting aggregate analytics via [Vercel Web Analytics](https://vercel.com/docs/analytics)
+- No accounts, subscriptions, or personal profiling
 
 ### 🧱 Commons Protected
 

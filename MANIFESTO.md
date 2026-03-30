@@ -8,7 +8,7 @@ I believe that professional filmmaking equipment should be:
 - **Repairable** — designed to last, adapt, and improve over time
 - **Shareable** — knowledge and designs belong to the community
 - **Local** — fabricated where you are, by people you know
-- **Trustworthy** — no accounts, no subscriptions, no tracking
+- **Trustworthy** — no accounts, no subscriptions, and privacy-respecting aggregate analytics
 
 ### Why I built this
 
@@ -17,7 +17,9 @@ Professional gear is often overpriced, proprietary, or designed to be discarded.
 ### How it's done
 
 - All computation happens in your browser
-- Your data never leaves your device
+- Core generation data stays on your device
+- Data is sent only when you choose to submit feedback
+- Aggregate usage insights are collected with Vercel Web Analytics
 - The code is open source and free forever
 - You own what you make
 

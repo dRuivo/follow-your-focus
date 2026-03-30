@@ -11,6 +11,11 @@
 	import HelpPrintingModal from '$lib/components/HelpPrintingModal.svelte';
 	import { modals, openModal } from '$lib/stores/modals';
 
+	import { dev } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+
+	injectAnalytics({ mode: dev ? 'development' : 'production' });
+
 	let mobileMenuOpen = $state(false);
 
 	let { children } = $props();

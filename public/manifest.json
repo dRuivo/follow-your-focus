@@ -1,7 +1,7 @@
 {
 	"name": "Follow Your Focus",
 	"short_name": "FYF",
-	"description": "Free, browser-based parametric follow focus ring generator for filmmakers. Design custom focus rings, 3D print locally. No accounts, subscriptions, or telemetry.",
+	"description": "Free, browser-based parametric follow focus ring generator for filmmakers. Core generation runs locally in your browser, with optional feedback submission and privacy-respecting aggregate analytics.",
 	"start_url": "/",
 	"scope": "/",
 	"display": "standalone",

@@ -6,7 +6,7 @@ Follow Your Focus is a **browser-based parametric follow focus ring generator** 
 
 **Key Philosophy**: Technical tools should serve people, not extract value from them. This project is:
 
-- **Free forever** (no accounts, subscriptions, or telemetry)
+- **Free forever** (no accounts or subscriptions, with privacy-respecting aggregate analytics)
 - **Privacy by design** (all computation runs locally in the browser)
 - **Commons-protected** (CC BY-NC 4.0 software license, CC BY 4.0 for generated outputs)
 - **Regenerative** (designed for repair, adaptation, and long-term use)
@@ -1010,7 +1010,8 @@ pnpm run build    # Production build
 
 - Configured with `@sveltejs/adapter-vercel`
 - SvelteKit handles routing and SSR
-- All computation happens in browser (no server-side processing)
+- Core ring generation happens in browser
+- Server routes are only used for optional feedback email delivery
 - Static deployment possible (SPA mode)
 
 ---
@@ -1092,9 +1093,9 @@ pnpm run build    # Production build
 - Rich material/lighting system
 - Large community & resources
 
-### Why No Backend?
+### Why Browser-First Architecture?
 
-- **Privacy**: Computation stays on user's device
+- **Privacy**: Core computation stays on user's device; optional feedback is sent server-side
 - **Reliability**: No server dependency
 - **Scalability**: Infinite concurrent users
 - **Philosophy**: Truly commons-based (can be self-hosted)
